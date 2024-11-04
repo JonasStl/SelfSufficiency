@@ -48,7 +48,6 @@ foreach var of varlist L-DH {
 }
 
 *** Population groups based on dietary recommendations
-//I left out 0 as they may not be relevant from a dietary perspectives (also considering that we excluded infant foods)
 egen pop_1_3 = rowtotal(M N O)
 egen pop_4_10 = rowtotal(P-V)
 egen pop_11_18 = rowtotal(W-AD)
