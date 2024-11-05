@@ -11,7 +11,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear
 encode Foodgroup, gen(fg)
-ren Age15_3 Age1_3 //I chose year 1 instead of 1.5 years --> I could also use half of the population
+ren Age15_3 Age1_3 
 local agegroups = "Age11_18 Age1_3 Age19_64 Age4_10 Age65"
 reshape wide `agegroups', i(Foodgroup) j(fg)
 foreach age of local agegroups {
@@ -60,7 +60,6 @@ foreach var of varlist L-DH {
 }
 
 *** Population groups based on dietary recommendations
-//I left out 0 as they may not be relevant from a dietary perspectives (also considering that we excluded infant foods)
 egen pop_1_3 = rowtotal(M N O)
 egen pop_4_10 = rowtotal(P-V)
 egen pop_11_18 = rowtotal(W-AD)
@@ -81,7 +80,7 @@ foreach groups in dairy fish fruit LNS SS meat veg {
 }
 
 ren ISO3Alphacode iso3
-keep livewell_dairy_* livewell_fish_* livewell_fruit_* livewell_LNS_* livewell_SS_* livewell_meat_* livewell_veg_* Year /*ISO2Alphacode*/ iso3 totpop
+keep livewell_dairy_* livewell_fish_* livewell_fruit_* livewell_LNS_* livewell_SS_* livewell_meat_* livewell_veg_* Year iso3 totpop
 
 * EAT-Lancet
 
@@ -97,10 +96,6 @@ ren Year year
 save "$datadir/timetrends_fooddemand.dta", replace
 
 																			
-																			
-																			
-
-
 
 ********************************************************************************
 ******************************* Food demand change *****************************
@@ -130,9 +125,6 @@ drop if inlist(itemcode,2744) //eggs
 drop if inlist(itemcode,2905,2907,2911,2912,2913,2914,2918,2919,2943,2945,2946,2949,2948,2960,2961) //Food group aggregates
 
 * Only keep relevant elements
-/*
-Keep population, production, feed, seed, losses, other non-food uses
-*/
 keep if /*element == "Domestic supply quantity" | element == "Food" |*/ element == "Production" | /*element == "Total Population - Both sexes" |*/ element == "Feed" | element == "Losses" | element == "Other uses (non-food)" | element == "Seed" | element == "Processing"
 
 
@@ -159,8 +151,8 @@ replace region = "USA, Canada, Oceania" if inlist(country_name,"Canada","United 
 replace region = "Industrialized Asia" if inlist(country_name,"Japan","China","China, Hong Kong SAR","China, Macao SAR","China, Taiwan Province of","South Korea")
 replace region = "sub-Saharan Africa" if worldregions == "Africa"
 replace region = "North Africa, West and Central Asia" if worldregions == "Middle East" | inlist(country_name,"Kazakhstan","Tajikistan","Kyrgyzstan","Mongolia","Turkmenistan","Uzbekistan")
-replace region = "Latin America" if (worldregions == "Americas" & region != "USA, Canada, Oceania") | (worldregions == "Oceania" & region != "USA, Canada, Oceania") //Oceania is not considered in the food waste report. I assigned them to Latin America.
-replace region = "South and Southeast Asia" if worldregions == "Asia" & region == "" // includes Armenia, Azerbaijan, Tajikistan .... fix this!
+replace region = "Latin America" if (worldregions == "Americas" & region != "USA, Canada, Oceania") | (worldregions == "Oceania" & region != "USA, Canada, Oceania") //Oceania is not considered in the food waste report and assigned to Latin America.
+replace region = "South and Southeast Asia" if worldregions == "Asia" & region == "" 
 // (all country names assigned)
 
 
@@ -251,15 +243,13 @@ gsort country_name itemcode item year
 
 /*
 I used projected agricultural production for each food item from Agricultural Outlook. Similarly, I adjusted feed use.
-I assumed food losses, non-food uses, and use for seed to be constant -> I took 2020 values. -> consider basing future values on past trends
-*/
+I assumed food losses, non-food uses, and use for seed to be constant -> I took 2020 values.
 */
 
 *** Calculation of daily per person gram production ***
 gen value = (productionadj/365)*1000*1000 //Calculate production per day in g (before in tonns)
 lab var value "Production per day (in g)"
 drop value5511 value5123 value5154 value5521 value5527 value5131
-// some values seem to have double entries (one flag == E, one flag == I)
 
 * Group food items
 gen foodgroups1 = ""
@@ -307,7 +297,6 @@ collapse (sum) consumption, by(country_name year HDB_FGs)
 encode HDB_FGs, gen(HDB_FG)
 fre HDB_FG
 drop HDB_FGs
-//drop consumption HDB_rec eatwell_rec HDB_FGs //cons_change_abs
 reshape wide consumption, i(country_name year) j(HDB_FG)
 
 ren consumption1 consumption_fish
@@ -319,7 +308,7 @@ ren consumption6 consumption_SS
 ren consumption7 consumption_veg
 
 
-* EAT Lancet Diet (0 changes made)
+* EAT Lancet Diet
 
 * Add countrycodes and rename countries (for EAT-Lancet)
 replace country_name = "Bahamas, The" if country_name == "Bahamas"
@@ -363,7 +352,7 @@ replace iso3 = "VEN" if country_name == "Venezuela (Bolivarian Republic of)"
 // (all country names assigned)
 
 * Merge food demand data
-drop if country_name == "China" // check whether it is okay to only use "mainland"
+drop if country_name == "China"
 merge 1:1 iso3 year using "$datadir/timetrends_fooddemand.dta", keep(match master) nogen // 1 country not matched
 
 *Calculate per capita values
@@ -389,9 +378,8 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	gen eatgap_perc_`group' = (consumptionpc_`group'/eatlancet_`group'_pc)*100
 	lab var eatgap_perc_`group' "Percent `group' production gap to the EAT-Lancet recommendation (in perc)"
 }
-//replace cons_change_perc = 1 + cons_change_perc
 
-export excel country_name year prodgap_abs_* prodgap_perc_* using "$workdir/timetrends_productiongap.xlsx", replace firstrow(varlabels) keepcellfmt //still drop those that are not considered later
+export excel country_name year prodgap_abs_* prodgap_perc_* using "$workdir/timetrends_productiongap.xlsx", replace firstrow(varlabels) keepcellfmt
 
 
 * Food group deprivation
@@ -451,7 +439,7 @@ replace econunions = "AFTA" if inlist(iso3,"BRN","KHM","IDN","LAO","MYS","MMR","
 replace econunions = "USMCA" if inlist(iso3,"USA","CAN","MEX")
 replace econunions = "SAARC" if inlist(iso3,"AFG","BGD","BTN","IND","MDV","NPL","PAK","LKA")
 
-drop if iso3 == "TWN" // not in shapefile
+drop if iso3 == "TWN" 
 drop if country_name == "Netherlands Antilles (former)"
 drop if inlist(country_name,"Sudan","South Sudan") // split during time period
 

@@ -11,7 +11,7 @@ import delimited "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/da
 drop referenceperiodcode referenceperiod flagcodes flags variable unit unitcode v8 powercodecode powercode
 
 * Keep/Calculate food production growth
-keep if inlist(v6,"Production","Feed","Biofuel use","Other use") // (for now)
+keep if inlist(v6,"Production","Feed","Biofuel use","Other use")
 
 * Reshape
 encode v6, gen(element)
@@ -22,7 +22,6 @@ reshape wide value, i(location country commodity v4 time) j(element)
 foreach var of varlist value1 value2 value3 value4 {
 	replace `var' = 0 if `var' == .
 }
-//gen productionadj = value4 - (value1 + value2 + value3)
 
 
 * Calculate growth
@@ -45,10 +44,6 @@ ren growth4 growth_production
 keep if time > 2022
 ren time year
 
-* Food item matching with FAO FBS (file will be merged in the main file)
-
-
-
 *** Country-level production
 
 preserve 
@@ -60,10 +55,7 @@ drop if inlist(country_name,"WORLD","NORTH AMERICA","LATIN AMERICA","EUROPE","Eu
 	"AFRICA","ASIA","OCEANIA","DEVELOPED COUNTRIES") | ///
 	inlist(country_name,"DEVELOPING COUNTRIES","LEAST DEVELOPED COUNTRIES (LDC)","OECD countries","BRICS")
 
-replace country_name = "China" if country_name == "China  (2)" // which is the right china
-replace country_name = "United Kingdom" if country_name == "United Kingdom"
-//replace area = "Russian Federation" if area == "Russia"
-replace country_name = "China, mainland" if country_name == "China" // which is the right china
+replace country_name = "China, mainland" if country_name == "China" 
 replace country_name = "Iran, Islamic Rep." if country_name == "Iran"
 replace country_name = "Korea, Rep." if country_name == "Korea"
 replace country_name = "Türkiye" if country_name == "Turkey"
@@ -90,7 +82,7 @@ restore
 append using `temp0'
 
 
-*** Region-level production
+*** Region-level production ***
 
 * Create MENA region based on median of other countries
 preserve
@@ -102,7 +94,7 @@ tempfile temp1
 save `temp1'
 restore
 
-* Create MENA region based on median of other countries
+* Create Central Asia region based on median of other countries
 preserve
 keep if inlist(country,"Kazakhstan")
 collapse (median) growth_biofuel growth_feed growth_otheruse growth_production, by(commodity v4 year)
@@ -143,7 +135,7 @@ forv years = 2023(1)2032 {
 }
 
 drop productionadj
-forv years = 2023(1)2032 { // I am relying on the same assumptions as for the capacility approach (values for other uses from 2020 -> not good -> I could also use continuous growth trends based on past data)
+forv years = 2023(1)2032 { // Values for other uses from 2020
 	gen productionadj`years' = production`years' - (value5123 + value5154 + feeduse`years' + value5527)
 	replace productionadj`years' = production`years' - (value5123 + value5154 + feeduse`years' + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563)
 	replace productionadj`years' = 0 if productionadj`years' < 0					

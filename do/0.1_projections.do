@@ -7,11 +7,11 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 import delimited "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/Agricultural Outlook Database/HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv", clear
 
-* Drop unnecessary variables
+* Drop unused variables
 drop referenceperiodcode referenceperiod flagcodes flags variable unit unitcode v8 powercodecode powercode
 
-* Keep/Calculate food production growth
-keep if inlist(v6,"Production","Feed","Biofuel use","Other use") // (for now)
+* Keep relevant categories
+keep if inlist(v6,"Production","Feed","Biofuel use","Other use")
 
 * Reshape
 encode v6, gen(element)
@@ -22,8 +22,6 @@ reshape wide value, i(location country commodity v4 time) j(element)
 foreach var of varlist value1 value2 value3 value4 {
 	replace `var' = 0 if `var' == .
 }
-//gen productionadj = value4 - (value1 + value2 + value3)
-
 
 * Calculate growth
 forv n = 1/4 {
@@ -49,12 +47,7 @@ keep if time == 2020
 drop time
 
 
-* Food item matching with FAO FBS (file will be merged in the main file)
-
-
-
-*** Country-level production
-
+*** Country-level production ***
 preserve 
 ren country country_name
 ren v4 Outlookname
@@ -64,10 +57,7 @@ drop if inlist(country_name,"WORLD","NORTH AMERICA","LATIN AMERICA","EUROPE","Eu
 	"AFRICA","ASIA","OCEANIA","DEVELOPED COUNTRIES") | ///
 	inlist(country_name,"DEVELOPING COUNTRIES","LEAST DEVELOPED COUNTRIES (LDC)","OECD countries","BRICS")
 
-replace country_name = "China" if country_name == "China  (2)" // which is the right china
-replace country_name = "United Kingdom" if country_name == "United Kingdom"
-//replace area = "Russian Federation" if area == "Russia"
-replace country_name = "China, mainland" if country_name == "China" // which is the right china
+replace country_name = "China, mainland" if country_name == "China"
 replace country_name = "Iran, Islamic Rep." if country_name == "Iran"
 replace country_name = "Korea, Rep." if country_name == "Korea"
 replace country_name = "Türkiye" if country_name == "Turkey"
@@ -77,7 +67,7 @@ save "$datadir/outlook_country.dta", replace
 restore
 
 
-* Calculate mean growth rates for 2 meat items by country
+* Calculate mean growth rates for two missing meat items by country
 preserve
 keep if inlist(v4,"Beef and veal","Sheepmeat","Pigmeat","Poultry meat")
 collapse (mean) growth_biofuel growth_feed growth_otheruse growth_production, by(country)
@@ -92,7 +82,7 @@ restore
 append using `temp0'
 
 
-*** Region-level production
+*** Region-level production ***
 
 * Create MENA region based on median of other countries
 preserve
@@ -104,7 +94,7 @@ tempfile temp1
 save `temp1'
 restore
 
-* Create MENA region based on median of other countries
+* Create Central Asia region based on median of other countries
 preserve
 keep if inlist(country,"Kazakhstan")
 collapse (median) growth_biofuel growth_feed growth_otheruse growth_production, by(commodity v4)

@@ -20,13 +20,6 @@ foreach var of varlist $coverage_LW {
 }
 
 
-
-
-
-
-*** Regions  // add a line for the world?
-use "$datadir/timetrends_productiongap.dta", clear
-
 * Identify 2010 samples
 foreach var of varlist $coverage_LW {
 	gen _`var'_N2010 = 1 if `var' < . & year == 2010
@@ -131,24 +124,9 @@ graph export "$workdir/graphs/trends.png", replace
 list productdeprv coverage_* if year == 2010 & UNregions == "World", abbreviate(20) 
 list productdeprv coverage_* if year == 2022 & UNregions == "World", abbreviate(20) 
 list productdeprv coverage_* if year == 2032 & UNregions == "World", abbreviate(20) 
-/*
-- No change in overall deprivation between 2010 and 2022
-- Increase in SS for LNS by 7 p.p. (17 countries) between 2010 and 2022 and 13 p.p. (28 countries) between 2010 and 2032
-- Reduction in SS of starchy staples between 2010 and 2022 by 6 p.p.
-- No substantial changes in dairy
-- No substantial changes in fish
-- No substantial changes in fruits
-- No substantial changes in meat
-- Increase in vegetables SS by 4 p.p. between 2010 and 2022 (9 countries)
-*/
 
 
-
-* Analysis: Intensive margin: one graph with world average of self-sufficiency each food group of countries not self-sufficient in 2010?
-
-
-
-*** Large table with 2010, 2022 and 2032
+*** Large table with 2010, 2022 and 2032 ***
 use "$datadir/timetrends_productiongap.dta", clear
 
 * Identify 2010 samples
@@ -189,7 +167,6 @@ foreach var of varlist coverage_dairy coverage_fish coverage_meat coverage_LNS c
 	replace productdeprv_5FG = productdeprv_5FG + 1 if `var' == 1
 	replace productdeprv_5FG = . if `var' == . 
 }
-
 
 * Different years have a different number of total countries --> don't use total number of countries in this case to compare years (only for 2022 versus 2032)
 foreach var of varlist $coverage_LW $coverage_EAT {	
@@ -236,8 +213,8 @@ tabstat prodgap_perc_fruit if inlist(year,2010,2020,2032) & SS_2022_fruit == 0 ,
 matrix D7 = r(Stat1)[1,1]
 matrix D8 = r(Stat2)[1,1]
 
-putexcel D7 = matrix(D6), nformat(#.00)
-putexcel D8 = matrix(D7), nformat(#.00)
+putexcel D7 = matrix(D7), nformat(#.00)
+putexcel D8 = matrix(D8), nformat(#.00)
 
 tabstat prodgap_perc_veg if inlist(year,2010,2020,2032) & SS_2022_veg == 0 , by(year) statistics(mean  /*semean sd*/) nototal format(%9.3g) columns(statistics) longstub save
 matrix E7 = r(Stat1)[1,1]
@@ -306,4 +283,4 @@ putexcel D10 = matrix(N)
 putexcel K10 = matrix(N10)
 putexcel L10 = matrix(N10)
 
-
+putexcel save

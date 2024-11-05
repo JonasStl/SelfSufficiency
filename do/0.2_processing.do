@@ -7,11 +7,11 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear
 encode Foodgroup, gen(fg)
-ren Age15_3 Age1_3 //I chose year 1 instead of 1.5 years --> I could also use half of the population
+ren Age15_3 Age1_3
 local agegroups = "Age11_18 Age1_3 Age19_64 Age4_10 Age65"
 reshape wide `agegroups', i(Foodgroup) j(fg)
+
 foreach age of local agegroups {
-	//subinstr(`age',"Age","",.)
 	ren `age'1 livewell_dairy_`age'
 	ren `age'2 livewell_fish_`age'
 	ren `age'3 livewell_fruit_`age'
@@ -57,7 +57,6 @@ egen pop_65 = rowtotal(BY-DH)
 *** Dietary recommendations
 merge m:1 Variant using `diet_wwf', nogen
 
-
 *** Scale recommendations up on population level
 egen totpop = rowtotal(pop_1_3 pop_4_10 pop_11_18 pop_19_64 pop_65)
 
@@ -67,10 +66,9 @@ foreach groups in dairy fish fruit LNS SS meat veg {
 }
 
 ren ISO3Alphacode iso3
-keep livewell_dairy_* livewell_fish_* livewell_fruit_* livewell_LNS_* livewell_SS_* livewell_meat_* livewell_veg_* Year /*ISO2Alphacode*/ iso3 totpop
+keep livewell_dairy_* livewell_fish_* livewell_fruit_* livewell_LNS_* livewell_SS_* livewell_meat_* livewell_veg_* Year iso3 totpop
 
 * EAT-Lancet
-
 gen eatlancet_dairy_pc = 250
 gen eatlancet_fish_pc = 28
 gen eatlancet_fruit_pc = 200
@@ -81,6 +79,7 @@ gen eatlancet_veg_pc = 300
 
 save "$datadir/fooddemand.dta", replace
 
+
 ********************************************************************************
 ****************** Agricultural Outlook Matching Preparation *******************
 ********************************************************************************
@@ -90,8 +89,6 @@ drop D
 ren ItemCode itemcode
 
 save "$datadir/Outlook_FAOFBS.dta", replace
-
-
 
 
 ********************************************************************************
@@ -122,13 +119,11 @@ drop if inlist(itemcode,2744) //eggs
 drop if inlist(itemcode,2905,2907,2911,2912,2913,2914,2918,2919,2943,2945,2946,2949,2948,2960,2961) //Food group aggregates
 
 * Only keep relevant elements
-/*
-Keep population, production, feed, seed, losses, other non-food uses
-*/
 keep if /*element == "Domestic supply quantity" | element == "Food" |*/ element == "Production" | /*element == "Total Population - Both sexes" |*/ element == "Feed" | element == "Losses" | element == "Other uses (non-food)" | element == "Seed" | element == "Processing"
 
 
-******* Group countries to various regions (used for several matchings) ********
+*** Group countries to various regions (used for several matchings) ***
+{
 ren area country_name
 replace country_name = "Netherlands" if country_name == "Netherlands (Kingdom of the)"
 
@@ -141,7 +136,6 @@ replace worldregions = "Americas" if inlist(country_name,"Bolivia (Plurinational
 replace worldregions = "Africa" if inlist(country_name,"Cabo Verde","Côte d'Ivoire","Eswatini")
 replace worldregions = "Asia" if inlist(country_name,"China, Hong Kong SAR","China, Macao SAR","China, Taiwan Province of")
 replace worldregions = "Middle East" if inlist(country_name,"Türkiye")
-// (all country names assigned)
 drop NAMES_STD
 
 * Create regions for Household Waste conversion factors
@@ -151,10 +145,9 @@ replace region = "USA, Canada, Oceania" if inlist(country_name,"Canada","United 
 replace region = "Industrialized Asia" if inlist(country_name,"Japan","China","China, Hong Kong SAR","China, Macao SAR","China, Taiwan Province of","South Korea")
 replace region = "sub-Saharan Africa" if worldregions == "Africa"
 replace region = "North Africa, West and Central Asia" if worldregions == "Middle East" | inlist(country_name,"Kazakhstan","Tajikistan","Kyrgyzstan","Mongolia","Turkmenistan","Uzbekistan")
-replace region = "Latin America" if (worldregions == "Americas" & region != "USA, Canada, Oceania") | (worldregions == "Oceania" & region != "USA, Canada, Oceania") //Oceania is not considered in the food waste report. I assigned them to Latin America.
-replace region = "South and Southeast Asia" if worldregions == "Asia" & region == "" // includes Armenia, Azerbaijan, Tajikistan .... fix this!
+replace region = "Latin America" if (worldregions == "Americas" & region != "USA, Canada, Oceania") | (worldregions == "Oceania" & region != "USA, Canada, Oceania") //Oceania is not considered in the food waste report and assigned to Latin America.
+replace region = "South and Southeast Asia" if worldregions == "Asia" & region == ""
 // (all country names assigned)
-
 
 * Add countrycodes and rename countries (for EAT-Lancet)
 replace country_name = "Bahamas, The" if country_name == "Bahamas"
@@ -195,8 +188,6 @@ replace iso3 = "SWZ" if country_name == "Eswatini"
 replace iso3 = "MKD" if country_name == "North Macedonia"
 replace iso3 = "TUR" if country_name == "Türkiye"
 replace iso3 = "VEN" if country_name == "Venezuela (Bolivarian Republic of)"
-// (all country names assigned)
-
 
 * Economic unions
 gen econunions = ""
@@ -208,7 +199,7 @@ replace econunions = "EACU" if inlist(iso3,"ARM", "BLR", "KAZ", "KGZ", "RUS")
 replace econunions = "GCC" if inlist(iso3,"BHR", "KWT", "OMN", "QAT", "SAU", "ARE")
 replace econunions = "SACU" if inlist(iso3,"BWA", "LSO", "NAM", "SWZ", "ZAF")
 replace econunions = "EAC" if inlist(iso3,"BDI", "KEN", "RWA", "TZA", "UGA") 
-replace econunions = "CEMAC" if inlist(iso3,"CMR", "CAF", "COG", "GAB", "TCD") //"GNQ" --> No data
+replace econunions = "CEMAC" if inlist(iso3,"CMR", "CAF", "COG", "GAB", "TCD")
 replace econunions = "WAEMU" if inlist(iso3,"SEN", "MLI", "BFA", "CIV", "NER", "TGO", "BEN")
 replace econunions = "MERCOSUR" if inlist(iso3,"ARG", "BRA", "PRY", "URY")
 replace econunions = "CAN" if inlist(iso3,"BOL", "COL", "ECU", "PER")
@@ -221,7 +212,7 @@ replace econunions = "AFTA" if inlist(iso3,"BRN","KHM","IDN","LAO","MYS","MMR","
 replace econunions = "USMCA" if inlist(iso3,"USA","CAN","MEX")
 replace econunions = "SAARC" if inlist(iso3,"AFG","BGD","BTN","IND","MDV","NPL","PAK","LKA")
 
-drop if iso3 == "TWN" // not in shapefile
+drop if iso3 == "TWN"
 
 * Create other regional levels
 kountry iso3, from(iso3c) geo(undet) // detailed UN regions
@@ -233,7 +224,6 @@ drop NAMES_STD
 ren GEO UNregions
 replace UNregions = "Europe" if iso3 == "MNE"
 
-
 * Generate variable for regional matching
 gen outlookregions = ""
 replace outlookregions = "EUROPE" if region == "Europe"
@@ -244,9 +234,8 @@ replace outlookregions = "ASIA" if (region == "South and Southeast Asia" | inlis
 replace outlookregions = "Middle East" if worldregions == "Middle East" & outlookregions == ""
 replace outlookregions = "NORTH AMERICA" if UNregions_det == "Northern America" & outlookregions == ""
 replace outlookregions = "Central Asia" if UNregions_det == "Central Asia" & outlookregions == ""
+}
 
-
-********************************************************************************
 
 *** Calculate domestic production available for consumption
 bysort elementcode: tab element
@@ -255,7 +244,7 @@ replace value = value*1000	// original value in thsd. tonnes
 
 reshape wide value, i(outlookregions econunions UNregions UNregions_det region worldregion iso3 country_name itemcode item) j(elementcode)
 foreach var of varlist value5123 value5154 value5511 value5521 value5527 value5131 {
-	replace `var' = 0 if `var' == . // check whether this is valid!
+	replace `var' = 0 if `var' == . 
 }
 gen productionadj = value5511 - (value5123 + value5154 + value5521 + value5527)
 replace productionadj = value5511 - (value5123 + value5154 + value5521 + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563) // to account for processing into oil
@@ -263,7 +252,8 @@ replace productionadj = 0 if productionadj < 0
 
 save "$datadir/timetrends_base2020.dta", replace // save for time trend analysis
 
-*** Matching with Agricultural Outlook Projection Data
+
+*** Matching with Agricultural Outlook Projection Data ***
 merge m:1 itemcode using "$datadir/Outlook_FAOFBS.dta", keep(match master) nogen
 merge m:1 country_name Outlookname using "$datadir/outlook_country.dta", keep(match master) gen(outlook_country)
 merge m:1 outlookregions Outlookname using "$datadir/outlook_region.dta", gen(outlook_region) update keepusing(growth_biofuel growth_feed growth_otheruse growth_production)
@@ -282,11 +272,9 @@ I assumed food losses, non-food uses, and use for seed to be constant -> I took 
 gen value = (productionadj/365)*1000*1000 //Calculate production per day in g (before in tonns)
 lab var value "Production per day (in g)"
 drop value5511 value5123 value5154 value5521 value5527 value5131
-// some values seem to have double entries (one flag == E, one flag == I)
 
 gen value_2032 = (productionadj_2032/365)*1000*1000 //Calculate production per day in g (before in tonns)
 lab var value_2032 "Production per day (in g), 2032 production"
-
 
 * Group food items
 gen foodgroups1 = ""
@@ -308,7 +296,6 @@ replace foodgroups1 = "pork" if itemcode == 2733
 replace foodgroups1 = "other meat" if itemcode == 2735 | itemcode == 2736
 replace foodgroups1 = "fish and seafood" if inrange(itemcode,2761,2769)
 
-
 * Generate HDB food groups
 gen HDB_FGs = ""
 replace HDB_FGs = "Starchy staples" if inlist(foodgroups1,"wheat, rye, other grains","maize, millet, sorghum","rice","starchy roots")	
@@ -318,7 +305,6 @@ replace HDB_FGs = "Meat" if inlist(foodgroups1,"beef","lamb","poultry","pork","o
 replace HDB_FGs = "Milk and dairy products" if inlist(foodgroups1,"milk and dairy")
 replace HDB_FGs = "Fish and seafood" if inlist(foodgroups1,"fish and seafood")
 replace HDB_FGs = "Legumes, nuts and seeds" if inlist(foodgroups1,"nuts","pulses","oilseeds")
-
 
 * Calculate true consumption
 merge m:1 region foodgroups1 using "$datadir/conversionfactors.dta", nogen // from Gustavsson
@@ -337,7 +323,7 @@ collapse (sum) consumption consumption_cap, by(country_name HDB_FGs)
 encode HDB_FGs, gen(HDB_FG)
 fre HDB_FG
 drop HDB_FGs
-//drop consumption HDB_rec eatwell_rec HDB_FGs //cons_change_abs
+
 reshape wide consumption consumption_cap, i(country_name) j(HDB_FG)
 drop consumption_cap2 consumption_cap7
 
@@ -356,7 +342,7 @@ ren consumption_cap5 consumption_cap_dairy
 ren consumption_cap6 consumption_cap_SS
 
 
-* EAT Lancet Diet
+*** EAT Lancet Diet **
 
 * Add countrycodes and rename countries (for EAT-Lancet)
 replace country_name = "Bahamas, The" if country_name == "Bahamas"
@@ -400,7 +386,7 @@ replace iso3 = "VEN" if country_name == "Venezuela (Bolivarian Republic of)"
 // (all country names assigned)
 
 * Merge food demand data
-drop if country_name == "China" // check whether it is okay to only use "mainland"
+drop if country_name == "China"
 merge 1:1 iso3 using "$datadir/fooddemand.dta", keep(match master) nogen
 
 *Calculate per capita values
@@ -431,7 +417,6 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	gen eatgap_perc_`group' = (consumptionpc_`group'/eatlancet_`group'_pc)*100
 	lab var eatgap_perc_`group' "Percent `group' production gap to the EAT-Lancet recommendation (in perc)"
 }
-//replace cons_change_perc = 1 + cons_change_perc
 
 foreach group in LNS SS dairy fish meat {
 	gen prodgap_abs_cap_`group' = consumptionpc_cap_`group' - livewell_`group'_pc
@@ -447,14 +432,9 @@ foreach group in LNS SS dairy fish meat {
 	gen eatgap_perc_cap_`group' = (consumptionpc_cap_`group'/eatlancet_`group'_pc)*100
 	lab var eatgap_perc_cap_`group' "Percent `group' production gap to the EAT-Lancet recommendation (in perc)"
 }
-//replace cons_change_perc = 1 + cons_change_perc
-
-
-
-
 
 * Export Heat Map
-export excel country_name prodgap_abs_* prodgap_perc_* using "$workdir/productiongap.xlsx", replace firstrow(varlabels) keepcellfmt //still drop those that are not considered later
+export excel country_name prodgap_abs_* prodgap_perc_* using "$workdir/tables/productiongap.xlsx", replace firstrow(varlabels) keepcellfmt //still drop those that are not considered later
 
 
 * Food group deprivation
@@ -477,7 +457,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	replace eatcoverage_`group' = 0 if eatgap_abs_`group' < 0 & eatgap_abs_`group' != .
 	
 	replace productdeprv_eat = productdeprv_eat + 1 if eatgap_abs_`group' >= 0 & eatgap_abs_`group' != .
-	replace productdeprv_eat = . if productdeprv_eat`group' == .
+	replace productdeprv_eat = . if eatgap_abs_`group' == .
 }
 
 // with production capacities
@@ -492,7 +472,7 @@ foreach group in LNS SS dairy fish meat {
 	replace coverage_cap_`group' = 0 if prodgap_abs_cap_`group' < 0 & prodgap_abs_cap_`group' != .
 	
 	replace productdeprv_cap = productdeprv_cap + 1 if prodgap_abs_cap_`group' >= 0 & prodgap_abs_cap_`group' != .
-	replace productdeprv_cap = . if productdeprv_cap`group' == .
+	replace productdeprv_cap = . if prodgap_abs_cap_`group' == .
 	
 	gen prodgap_cap_change_`group' = prodgap_perc_cap_`group' - prodgap_perc_`group'
 	
@@ -502,11 +482,11 @@ foreach group in LNS SS dairy fish meat {
 	replace eatcoverage_cap_`group' = 0 if eatgap_abs_cap_`group' < 0 & eatgap_abs_cap_`group' != .
 	
 	replace productdeprv_cap_eat = productdeprv_cap_eat + 1 if eatgap_abs_cap_`group' >= 0 & eatgap_abs_cap_`group' != .
-	replace productdeprv_cap_eat = . if productdeprv_cap_eat`group' == .
+	replace productdeprv_cap_eat = . if eatgap_abs_cap_`group' == .
 }
 
 
-* Add regions
+*** Add regions ***
 * Create other regional levels
 kountry iso3, from(iso3c) geo(undet) // detailed UN regions
 drop NAMES_STD
@@ -516,7 +496,6 @@ kountry iso3, from(iso3c) geo(men) // (Middle-East narrowly defined)
 drop NAMES_STD
 ren GEO UNregions
 replace UNregions = "Europe" if iso3 == "MNE"
-
 
 * Economic unions
 gen econunions = ""
@@ -541,18 +520,17 @@ replace econunions = "AFTA" if inlist(iso3,"BRN","KHM","IDN","LAO","MYS","MMR","
 replace econunions = "USMCA" if inlist(iso3,"USA","CAN","MEX")
 replace econunions = "SAARC" if inlist(iso3,"AFG","BGD","BTN","IND","MDV","NPL","PAK","LKA")
 
-drop if iso3 == "TWN" // not in shapefile
-drop if country_name == "Netherlands Antilles (former)"
 
 save "$datadir/productiongap.dta", replace
+
 
 ********************************************************************************
 * 								World Bank data								   *
 ********************************************************************************
 clear
-	//cap ssc install wbopendata
-	wbopendata, indicator(NY.GDP.PCAP.PP.KD;NE.CON.PRVT.PP.KD;SI.POV.NAHC/*;SI.POV.NAGP*/) long year(2020) clear //projection
-	keep countrycode countryname incomelevel incomelevelname regionname year ny_gdp_pcap_pp_kd /*per capita GDP in 2017 PPP*/ ne_con_prvt_pp_kd /*Consumption expenditure in 2017 PPP*/ si_pov_nahc /* Headcount national poverty lines*/ //si_pov_nagp /*PovGap National Poverty Lines*/ 
+	cap ssc install wbopendata
+	wbopendata, indicator(NY.GDP.PCAP.PP.KD;NE.CON.PRVT.PP.KD;SI.POV.NAHC) long year(2020) clear
+	keep countrycode countryname incomelevel incomelevelname regionname year ny_gdp_pcap_pp_kd /*per capita GDP in 2017 PPP*/ ne_con_prvt_pp_kd /*Consumption expenditure in 2017 PPP*/ si_pov_nahc /* Headcount national poverty lines*/
 	
 	drop if regionname == "Aggregates"
 	ren countrycode iso3
@@ -569,7 +547,5 @@ use "$datadir/productiongap.dta", clear
 merge 1:1 iso3 using "$datadir/wbopendata.dta", nogen keep(match master)
 gen consexp_pc_pd = ne_con_prvt_pp_kd/totpop/365
 lab var consexp_pc_pd "Private consumption expenditure (2017 PPP), per capita per day"
-//ny_gdp_pcap_pp_kd
-//si_pov_nahc
-//consexp_pc_pd
+
 save "$datadir/productiongap.dta", replace
