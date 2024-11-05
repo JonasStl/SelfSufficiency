@@ -31,7 +31,7 @@ Install the following STATA packages: wbopendata, spmap, kountry, grc1leg2
 
 Run the STATA do.files in the following order:
 1. 0.1_projections.do
-2. 0.2_Production Gap_240826.do
+2. 0.2_processing.do
 3. 1.2_analysis.do
 4. 2.1_timetrends_projections.do
 5. 2.2_timetrends_processing.do
