@@ -12,9 +12,9 @@ import delimited "/Users/jonasstehl/ownCloud/Data/FAOSTAT Trade/Trade Matrix/Tra
 keep if year == 2020
 keep if element == "Import Quantity"
 
-save "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/tradematrix.dta", replace
+save "$datadir/tradematrix.dta", replace
 ***
-use "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/tradematrix.dta", clear
+use "$datadir/tradematrix.dta", clear
 
 * Drop irrelevant items
 drop if inlist(itemcode,1002,1007,1008,1009,101,1025,1026,1027,1028,1030,1031,1037,1038,1039,1040,1043,1045,1046,1047,1065,1066,109,1100,1129,1146,1168,1169,1181,1182,1183,1185,1186,1187,1195,1213,1214,1215,1216,1217,1218,1219,1221,1222,1225,1232,1241,1242,1243,1259,1274,1275,1276,1277,1293,1295,1296,156,157,160,161,162,163,164,165,166,167,168,169,170,172,173,175,237,237,239,240,241,244,251,252,253,256,257,258,259,261,264,266,268,269,271,272,273,274,276,278,281,282,290,291,293,294,297,564,391) // Oil, hair, etc.
@@ -46,10 +46,9 @@ replace foodgroup = "Meat" if inlist(itemcode,1016,1017,1018,1034,1035,1036,1041
 
 replace foodgroup = "Vegetables" if inlist(itemcode,358, 366, 367, 372, 373, 388, 392, 393, 394, 397, 399, 401, 402, 403, 406, 407, 414, 417, 420, 423, 426, 430, 446, 447, 448, 449, 450, 451, 459, 460, 463, 465, 466, 469, 471, 472, 473, 474, 475, 476)
 
-
 * Adjust units 
 // An and 1000 An
-drop if unit == "An" | unit == "1000 An" // probably in tonnes and numbers
+drop if unit == "An" | unit == "1000 An" 
 
 
 *********************************** Analysis ***********************************
@@ -97,316 +96,10 @@ replace country_name = "Korea, Rep." if country_name == "Republic of Korea"
 merge m:1 country_name using "$datadir/productiongap.dta", nogen keep(match master)
 
 
-
-
 *********************************** Plotting ***********************************
 
-* Scatter plot (x-axis: share of self-sufficiency; y-axis: to what extent country depends on one importer) -> only use countries not self-sufficient (do the same with y-axis displaying extent to which they depend on 2 importers and so on)
 // "At risk countries": Less than 50% self-sufficiency and >50% of imports from one country 
 graph set window fontface "Times New Roman"
-{
-//LNS
-twoway (scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_LNS < 50 & prodgap_perc_LNS >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*2)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_LNS < 50 & prodgap_perc_LNS >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_LNS < 40 & prodgap_perc_LNS >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_LNS < 50 & prodgap_perc_LNS >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_LNS < 40 & prodgap_perc_LNS >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_LNS < 30 & prodgap_perc_LNS >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_LNS < 50 & prodgap_perc_LNS >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_LNS < 40 & prodgap_perc_LNS >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_LNS < 30 & prodgap_perc_LNS >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_LNS < 20 & prodgap_perc_LNS >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_LNS < 50 & prodgap_perc_LNS >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_LNS < 40 & prodgap_perc_LNS >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_LNS < 30 & prodgap_perc_LNS >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_LNS < 20 & prodgap_perc_LNS >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_LNS < 10 & prodgap_perc_LNS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_LNS < 40 & prodgap_perc_LNS >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_LNS < 30 & prodgap_perc_LNS >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_LNS < 20 & prodgap_perc_LNS >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_LNS < 10 & prodgap_perc_LNS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_LNS < 30 & prodgap_perc_LNS >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_LNS < 20 & prodgap_perc_LNS >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_LNS < 10 & prodgap_perc_LNS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_LNS < 20 & prodgap_perc_LNS >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_LNS < 10 & prodgap_perc_LNS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_LNS < 10 & prodgap_perc_LNS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g1, replace) title("Legumes, nuts and seeds", color(black) size(medsmall)) nodraw legend(off)
-
-	
-//twoway (scatter prodgap_perc_LNS importshare if importrank == 1 & importshare > 50 & foodgroup == "Legumes, nuts and seeds" & prodgap_perc_LNS < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Legumes, nuts and seeds", color(black))
-
-// SS
-twoway (scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_SS < 50 & prodgap_perc_SS >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_SS < 50 & prodgap_perc_SS >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_SS < 40 & prodgap_perc_SS >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_SS < 50 & prodgap_perc_SS >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_SS < 40 & prodgap_perc_SS >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_SS < 30 & prodgap_perc_SS >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_SS < 50 & prodgap_perc_SS >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_SS < 40 & prodgap_perc_SS >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_SS < 30 & prodgap_perc_SS >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_SS < 20 & prodgap_perc_SS >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_SS < 50 & prodgap_perc_SS >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_SS < 40 & prodgap_perc_SS >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_SS < 30 & prodgap_perc_SS >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_SS < 20 & prodgap_perc_SS >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_SS < 10 & prodgap_perc_SS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_SS < 40 & prodgap_perc_SS >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_SS < 30 & prodgap_perc_SS >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_SS < 20 & prodgap_perc_SS >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_SS < 10 & prodgap_perc_SS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_SS < 30 & prodgap_perc_SS >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_SS < 20 & prodgap_perc_SS >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_SS < 10 & prodgap_perc_SS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_SS < 20 & prodgap_perc_SS >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_SS < 10 & prodgap_perc_SS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "Starchy staples" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_SS < 10 & prodgap_perc_SS >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Starchy staples", color(black) size(medsmall)) nodraw legend(off)
-
-	
-//twoway (scatter prodgap_perc_SS importshare if importrank == 1 & importshare > 50 & foodgroup == "Starchy staples" & prodgap_perc_SS < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Starchy staples", color(black)) //nodraw
-
-// Dairy
-twoway (scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_dairy < 50 & prodgap_perc_dairy >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*2)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_dairy < 50 & prodgap_perc_dairy >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_dairy < 40 & prodgap_perc_dairy >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_dairy < 50 & prodgap_perc_dairy >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_dairy < 40 & prodgap_perc_dairy >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_dairy < 30 & prodgap_perc_dairy >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_dairy < 50 & prodgap_perc_dairy >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_dairy < 40 & prodgap_perc_dairy >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_dairy < 30 & prodgap_perc_dairy >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_dairy < 20 & prodgap_perc_dairy >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_dairy < 50 & prodgap_perc_dairy >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_dairy < 40 & prodgap_perc_dairy >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_dairy < 30 & prodgap_perc_dairy >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_dairy < 20 & prodgap_perc_dairy >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_dairy < 10 & prodgap_perc_dairy >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_dairy < 40 & prodgap_perc_dairy >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_dairy < 30 & prodgap_perc_dairy >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_dairy < 20 & prodgap_perc_dairy >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_dairy < 10 & prodgap_perc_dairy >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_dairy < 30 & prodgap_perc_dairy >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_dairy < 20 & prodgap_perc_dairy >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_dairy < 10 & prodgap_perc_dairy >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_dairy < 20 & prodgap_perc_dairy >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_dairy < 10 & prodgap_perc_dairy >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup == "Dairy" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_dairy < 10 & prodgap_perc_dairy >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g3, replace) title("Dairy", color(black) size(medsmall)) nodraw legend(off)
-
-
-//twoway (scatter prodgap_perc_dairy importshare if importrank == 1 & importshare > 50 & foodgroup == "Dairy" & prodgap_perc_dairy < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g3, replace) title("Dairy", color(black)) //nodraw
-
-
-// Fruits
-twoway (scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_fruit < 50 & prodgap_perc_fruit >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*2)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_fruit < 50 & prodgap_perc_fruit >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_fruit < 40 & prodgap_perc_fruit >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_fruit < 50 & prodgap_perc_fruit >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_fruit < 40 & prodgap_perc_fruit >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_fruit < 30 & prodgap_perc_fruit >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_fruit < 50 & prodgap_perc_fruit >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_fruit < 40 & prodgap_perc_fruit >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_fruit < 30 & prodgap_perc_fruit >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_fruit < 20 & prodgap_perc_fruit >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_fruit < 50 & prodgap_perc_fruit >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_fruit < 40 & prodgap_perc_fruit >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_fruit < 30 & prodgap_perc_fruit >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_fruit < 20 & prodgap_perc_fruit >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_fruit < 10 & prodgap_perc_fruit >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_fruit < 40 & prodgap_perc_fruit >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_fruit < 30 & prodgap_perc_fruit >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_fruit < 20 & prodgap_perc_fruit >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_fruit < 10 & prodgap_perc_fruit >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_fruit < 30 & prodgap_perc_fruit >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_fruit < 20 & prodgap_perc_fruit >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_fruit < 10 & prodgap_perc_fruit >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_fruit < 20 & prodgap_perc_fruit >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_fruit < 10 & prodgap_perc_fruit >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_fruit importshare if importrank == 1 & foodgroup == "Fruits" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_fruit < 10 & prodgap_perc_fruit >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g4, replace) title("Fruits", color(black) size(medsmall)) nodraw legend(off)
-
-
-//twoway (scatter prodgap_perc_fruit importshare if importrank == 1 & importshare > 50 & foodgroup == "Fruits" & prodgap_perc_fruit < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g4, replace) title("Fruits", color(black)) nodraw
-
-
-// Meat 
-twoway (scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_meat < 50 & prodgap_perc_meat >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*2)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_meat < 50 & prodgap_perc_meat >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_meat < 40 & prodgap_perc_meat >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_meat < 50 & prodgap_perc_meat >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_meat < 40 & prodgap_perc_meat >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_meat < 30 & prodgap_perc_meat >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_meat < 50 & prodgap_perc_meat >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_meat < 40 & prodgap_perc_meat >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_meat < 30 & prodgap_perc_meat >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_meat < 20 & prodgap_perc_meat >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_meat < 50 & prodgap_perc_meat >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_meat < 40 & prodgap_perc_meat >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_meat < 30 & prodgap_perc_meat >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_meat < 20 & prodgap_perc_meat >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_meat < 10 & prodgap_perc_meat >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_meat < 40 & prodgap_perc_meat >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_meat < 30 & prodgap_perc_meat >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_meat < 20 & prodgap_perc_meat >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_meat < 10 & prodgap_perc_meat >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_meat < 30 & prodgap_perc_meat >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_meat < 20 & prodgap_perc_meat >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_meat < 10 & prodgap_perc_meat >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_meat < 20 & prodgap_perc_meat >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_meat < 10 & prodgap_perc_meat >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == "Meat" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_meat < 10 & prodgap_perc_meat >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g5, replace) title("Meat", color(black) size(medsmall)) nodraw legend(off)
-
-//twoway (scatter prodgap_perc_meat importshare if importrank == 1 & importshare > 50 & foodgroup == "Meat" & prodgap_perc_meat < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g5, replace) title("Meat", color(black)) nodraw
-
-
-// Vegetables
-twoway (scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 50 & importshare <= 60 & prodgap_perc_veg < 50 & prodgap_perc_veg >= 40)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*2) mlabcolor(red*2)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 60 & importshare <= 70 & prodgap_perc_veg < 50 & prodgap_perc_veg >= 40) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_veg < 40 & prodgap_perc_veg >= 30)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.9) mlabcolor(red*1.9)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 70 & importshare <= 80 & prodgap_perc_veg < 50 & prodgap_perc_veg >= 40) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_veg < 40 & prodgap_perc_veg >= 30) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_veg < 30 & prodgap_perc_veg >= 20)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.7) mlabcolor(red*1.7)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 80 & importshare <= 90 & prodgap_perc_veg < 50 & prodgap_perc_veg >= 40) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_veg < 40 & prodgap_perc_veg >= 30) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_veg < 30 & prodgap_perc_veg >= 20) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_veg < 20 & prodgap_perc_veg >= 10)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.6) mlabcolor(red*1.6)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_veg < 50 & prodgap_perc_veg >= 40) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_veg < 40 & prodgap_perc_veg >= 30) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_veg < 30 & prodgap_perc_veg >= 20) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_veg < 20 & prodgap_perc_veg >= 10) | ///
-	(importshare > 50 & importshare <= 60 & prodgap_perc_veg < 10 & prodgap_perc_veg >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.4) mlabcolor(red*1.4)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_veg < 40 & prodgap_perc_veg >= 30) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_veg < 30 & prodgap_perc_veg >= 20) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_veg < 20 & prodgap_perc_veg >= 10) | ///
-	(importshare > 60 & importshare <= 70 & prodgap_perc_veg < 10 & prodgap_perc_veg >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*1.3) mlabcolor(red*1.3)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_veg < 30 & prodgap_perc_veg >= 20) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_veg < 20 & prodgap_perc_veg >= 10) | ///
-	(importshare > 70 & importshare <= 80 & prodgap_perc_veg < 10 & prodgap_perc_veg >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1.1) mlabcolor(red*1.1)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_veg < 20 & prodgap_perc_veg >= 10) | ///
-	(importshare > 80 & importshare <= 90 & prodgap_perc_veg < 10 & prodgap_perc_veg >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(12) mcolor(red*1) mlabcolor(red*1)) ///
-	(scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "Vegetables" & ///
-	((importshare > 90 & importshare <= 100 & prodgap_perc_veg < 10 & prodgap_perc_veg >= 0)), ///
-	msize(small) mlab(iso3) mlabposition(3) mcolor(red*0.8) mlabcolor(red*0.8)) ///
-	, ytitle("Self-sufficiency gap (in %)") xtitle("Share of imports from one country (in %)") graphregion(color(white)) plotregion(margin(r+5)) name(g6, replace) title("Vegetables", color(black) size(medsmall)) nodraw legend(off)
-
-}
-//twoway (scatter prodgap_perc_veg importshare if importrank == 1 & importshare > 50 & foodgroup == "Vegetables" & prodgap_perc_veg < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g6, replace) title("Vegetables", color(black)) nodraw
-
-// Combine 
-//graph combine g2 g3 g4 g5 g1 g6, rows(3) cols(2) ysize(2) xsize(2) imargin(zero) graphregion(color(white)) ycommon xcommon
-grc1leg2 g4 g6 g3 g1 g5 g2, rows(3) cols(2) imargin(zero) ysize(2) xsize(2) graphregion(color(white)) ycommon xcommon loff xtob1title ytol1title  
-
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/shockrisk.png", replace
-
 
 
 *** Color by world region ***
@@ -443,9 +136,6 @@ twoway (scatter prodgap_perc_LNS importshare if importrank == 1 & foodgroup == "
 	, ytitle("Self-sufficiency gap (in %)", size(small)) ylab(, angle(0)) xtitle("Share of imports from one country (in %)", size(small)) note("n = `Nnote'", size(vsmall) position(2) ring(0)) graphregion(color(white)) plotregion(margin(r+5)) name(g1, replace) title("Legumes, nuts and seeds", color(black) size(medsmall)) nodraw ///
 	legend(rows(3) region(lstyle(none)) label(1 "East Asia and Pacific") label(2 "Europe and Central Asia") label(3 "Latin America and Caribbean") label(4 "Middle East and North Africa") label(5 "North America") label(6 "South Asia") label(7 "Sub-Saharan Africa"))
 
-	
-//twoway (scatter prodgap_perc_LNS importshare if importrank == 1 & importshare > 50 & foodgroup == "Legumes, nuts and seeds" & prodgap_perc_LNS < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Legumes, nuts and seeds", color(black))
-
 // SS
 sum importrank if importrank == 1 & foodgroup == "Starchy staples" & importshare > 50 & prodgap_perc_SS < 50
 local Nnote1 = `r(sum)'
@@ -477,9 +167,6 @@ twoway (scatter prodgap_perc_SS importshare if importrank == 1 & foodgroup == "S
 	, msize(small) mlab(iso3) mlabposition(12) mcolor(gold) mlabcolor(gold)) ///
 	, ytitle("Self-sufficiency gap (in %)", size(small)) ylab(, angle(0)) xtitle("Share of imports from one country (in %)", size(small)) note("n = `Nnote'", size(vsmall) position(5) ring(0)) graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Starchy staples", color(black) size(medsmall)) nodraw legend(off)
 
-	
-//twoway (scatter prodgap_perc_SS importshare if importrank == 1 & importshare > 50 & foodgroup == "Starchy staples" & prodgap_perc_SS < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g2, replace) title("Starchy staples", color(black)) //nodraw
-
 // Dairy
 sum importrank if importrank == 1 & foodgroup == "Dairy" & importshare > 50 & prodgap_perc_dairy < 50
 local Nnote1 = `r(sum)'
@@ -510,10 +197,6 @@ twoway (scatter prodgap_perc_dairy importshare if importrank == 1 & foodgroup ==
 	(importshare > 50 & prodgap_perc_dairy < 50 & wbregion == "Sub-Saharan Africa") ///
 	, msize(small) mlab(iso3) mlabposition(12) mcolor(gold) mlabcolor(gold)) ///
 	, ytitle("Self-sufficiency gap (in %)", size(small)) ylab(, angle(0)) xtitle("Share of imports from one country (in %)", size(small)) note("n = `Nnote'", size(vsmall) position(2) ring(0)) graphregion(color(white)) plotregion(margin(r+5)) name(g3, replace) title("Dairy", color(black) size(medsmall)) nodraw legend(off)
-
-
-//twoway (scatter prodgap_perc_dairy importshare if importrank == 1 & importshare > 50 & foodgroup == "Dairy" & prodgap_perc_dairy < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g3, replace) title("Dairy", color(black)) //nodraw
-
 
 // Fruits
 sum importrank if importrank == 1 & foodgroup == "Fruits" & importshare > 50 & prodgap_perc_fruit < 50
@@ -577,9 +260,6 @@ twoway (scatter prodgap_perc_meat importshare if importrank == 1 & foodgroup == 
 	, msize(small) mlab(iso3) mlabposition(12) mcolor(gold) mlabcolor(gold)) ///
 	, ytitle("Self-sufficiency gap (in %)", size(small)) ylab(, angle(0)) xtitle("Share of imports from one country (in %)", size(small)) note("n = `Nnote'", size(vsmall) position(5) ring(0)) graphregion(color(white)) plotregion(margin(r+5)) name(g5, replace) title("Meat", color(black) size(medsmall)) nodraw legend(off)
 
-//twoway (scatter prodgap_perc_meat importshare if importrank == 1 & importshare > 50 & foodgroup == "Meat" & prodgap_perc_meat < 50, msize(small) mlab(iso3) mcolor(black) mlabposition(12) mlabcolor(black) ytitle("Self-sufficiency gap") xtitle("Share of imports from one country")), graphregion(color(white)) plotregion(margin(r+5)) name(g5, replace) title("Meat", color(black)) nodraw
-
-
 // Vegetables
 sum importrank if importrank == 1 & foodgroup == "Vegetables" & importshare > 50 & prodgap_perc_veg < 50
 local Nnote1 = `r(sum)'
@@ -615,21 +295,11 @@ twoway (scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "
 
 // Combine 
 graph set window fontface "Times New Roman"
-//graph combine g2 g3 g4 g5 g1 g6, rows(3) cols(2) ysize(2) xsize(2) imargin(zero) graphregion(color(white)) ycommon xcommon
 grc1leg2 g4 g6 g3 g1 g5 g2, rows(3) cols(2) imargin(zero) ysize(2.3) xsize(2) graphregion(color(white)) ycommon xcommon xtob1title ytol1title legendfrom(g1) ring(100)
 graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/shockrisk_worldregion.png", replace
 
 
-
-
-
-
-* Make table with countries from the plot
-
-
-
-
-*** 2 Importers ***
+*** 2 Importers (not used in paper) ***
 bysort country_name foodgroup: egen twoimportshare = total(importshare) if inlist(importrank,1,2)
 graph set window fontface "Times New Roman"
 
