@@ -39,31 +39,37 @@ Change the file paths accordingly.
 
 Run the STATA do.files in the following order:
 1. 0.1_projections.do
+
    Uses:
    - Agricultural Outlook Database: HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv
-2. 0.2_processing.do
+3. 0.2_processing.do
+
    Uses:
    - Food group recommendations: foodgroups_wwf.xlsx
    - Population data: population_bothsexes.xlsx
    - Agricultural Outlook FAO FBS matching data: Outlook_FAOFBS matching.xls
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
-3. 1.2_analysis.do
+4. 1.2_analysis.do
 
-4. 2.1_timetrends_projections.do
+5. 2.1_timetrends_projections.do
+
    Uses:
    - Agricultural Outlook Database: HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv
-5. 2.2_timetrends_processing.do
+6. 2.2_timetrends_processing.do
+
    Uses:
    - Food group recommendations: foodgroups_wwf.xlsx
    - Population data: population_bothsexes.xlsx
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
-6. 2.3_timetrends_analysis.do
-7. 3.1_trade.do
+7. 2.3_timetrends_analysis.do
+8. 3.1_trade.do
+
    Uses:
    - FAO Trade Data: Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv
-8. 4.1_maps.do
-   Uses:
+10. 4.1_maps.do
+
+  Uses:
    - Shapefiles: _worldmap.dta
 
