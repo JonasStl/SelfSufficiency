@@ -2,6 +2,9 @@
 ************************************* Maps *************************************
 ********************************************************************************
 
+global workdir "./SelfSufficiency/Analysis"
+global datadir "./SelfSufficiency/Analysis/data"
+
 cd "$datadir/shapefiles"
 //spshape2dta WB_countries_Admin0_10m, replace saving(_worldmap)
 
