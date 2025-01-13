@@ -24,7 +24,7 @@ Public datasets:
   - OECD-FAO Agricultural Outlook Data: https://www.oecd-ilibrary.org/agriculture-and-food/data/oecd-agriculture-statistics/oecd-fao-agricultural-outlook-edition-2023_3f870a2b-en
   - Food waste at the household and edible portions: https://openknowledge.fao.org/server/api/core/bitstreams/10388b16-5f1a-45d0-b690-e89bb78d33bb/content
 
-Other data:
+Other data available in "SelfSufficiency/data":
   - Food group recommendations: foodgroups_wwf.xlsx
   - Agricultural Outlook FAO FBS matching data: Outlook_FAOFBS matching.xls
   - Conversion factors from Gustavsson: conversionfactors.dta
