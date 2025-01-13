@@ -17,11 +17,11 @@ Project team: Jonas Stehl, Alexander Vonderschmidt, Sebastian Vollmer, Peter Ale
 All data used in this project is publicly available or provided in this repository:
 
 Public datasets:
-  - FAOSTAT Food Balance Sheets: https://www.fao.org/faostat/en/#data/FBS
-  - FAOSTAT Trade Data: https://www.fao.org/faostat/en/#data/TM
-  - United Nations World Population Estimates: https://population.un.org/wpp/
+  - FAOSTAT Food Balance Sheets (accessed on 24.07.2024): https://www.fao.org/faostat/en/#data/FBS
+  - FAOSTAT Trade Data (accessed on 26.11.2023): https://www.fao.org/faostat/en/#data/TM
+  - United Nations World Population Estimates 2022 (accessed on 27.08.2023): https://population.un.org/wpp/
   - World Wildlife Fund’s 2023 ‘Eating for Net Zero’ Technical Report: https://www.wwf.org.uk/sites/default/files/2023-05/Eating_For_Net_Zero_Technical_Report.pdf
-  - OECD-FAO Agricultural Outlook Data: https://www.oecd-ilibrary.org/agriculture-and-food/data/oecd-agriculture-statistics/oecd-fao-agricultural-outlook-edition-2023_3f870a2b-en
+  - OECD-FAO Agricultural Outlook 2023-2032 Data (accessed on 09.01.2024): https://www.oecd-ilibrary.org/agriculture-and-food/data/oecd-agriculture-statistics/oecd-fao-agricultural-outlook-edition-2023_3f870a2b-en
   - Food waste at the household and edible portions: https://openknowledge.fao.org/server/api/core/bitstreams/10388b16-5f1a-45d0-b690-e89bb78d33bb/content
 
 Other data available in "SelfSufficiency/data":
@@ -42,6 +42,7 @@ Run the STATA do.files in the following order:
 
    Uses:
    - Agricultural Outlook Database: HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv
+
 3. 0.2_processing.do
 
    Uses:
@@ -50,12 +51,14 @@ Run the STATA do.files in the following order:
    - Agricultural Outlook FAO FBS matching data: Outlook_FAOFBS matching.xls
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
+
 4. 1.2_analysis.do
 
 5. 2.1_timetrends_projections.do
 
    Uses:
    - Agricultural Outlook Database: HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv
+
 6. 2.2_timetrends_processing.do
 
    Uses:
@@ -63,11 +66,14 @@ Run the STATA do.files in the following order:
    - Population data: population_bothsexes.xlsx
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
+
 7. 2.3_timetrends_analysis.do
+
 8. 3.1_trade.do
 
    Uses:
    - FAO Trade Data: Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv
+
 10. 4.1_maps.do
 
   Uses:
