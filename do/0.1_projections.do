@@ -1,11 +1,11 @@
-global workdir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis"
-global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data"
+global workdir "./SelfSufficiency/Analysis"
+global datadir "./SelfSufficiency/Analysis/data"
 
 
 ********************************************************************************
 * Expected production growth until 2032 using the Agricultural Outlook Database	*
 ********************************************************************************
-import delimited "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/Agricultural Outlook Database/HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv", clear // Agricultural Outlook Database 2023-2032, version: downloaded on January 9th, 2024 
+import delimited "$datadir/HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv", clear // Agricultural Outlook Database 2023-2032, version: downloaded on January 9th, 2024 
 
 * Drop unused variables
 drop referenceperiodcode referenceperiod flagcodes flags variable unit unitcode v8 powercodecode powercode

@@ -2,10 +2,13 @@
 ************************************* Maps *************************************
 ********************************************************************************
 
-cd "/Users/jonasstehl/ownCloud/Healthy food poverty/Analysis/data/shapefiles"
+global workdir "./SelfSufficiency/Analysis"
+global datadir "./SelfSufficiency/Analysis/data"
+
+cd "$datadir/shapefiles"
 //spshape2dta WB_countries_Admin0_10m, replace saving(_worldmap)
 
-use "/Users/jonasstehl/ownCloud/Healthy food poverty/Analysis/data/shapefiles/_worldmap.dta", clear
+use "$datadir/shapefiles/_worldmap.dta", clear
 ren ISO_A3_EH iso3
 replace iso3 = "NOR" if WB_A3 == "NOR"
 duplicates list iso3
@@ -26,28 +29,28 @@ spmap unions using _worldmap_shp, id(_ID) fcolor(red midblue green yellow orange
 graph set window fontface "Times New Roman"
 
 spmap prodgap_perc_fruit using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fruits production gap (in perc)") clmethod(custom) clbreaks(-40 20 40 60 80 100 1500)  name(map_fruits, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(medium) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Fruits", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_fruits.png", replace
+graph export "$workdir/graphs/gap_fruits.png", replace
 
 spmap prodgap_perc_veg using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Vegetables production gap (in perc)") clmethod(custom) clbreaks(-13 20 40 60 80 100 360)  name(map_veg, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Vegetables", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_veg.png", replace
+graph export "$workdir/graphs/gap_veg.png", replace
 
 spmap prodgap_perc_SS using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Starchy staples production gap (in perc)") clmethod(custom) clbreaks(-650 20 40 60 80 100 1005)  name(map_SS, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Starchy Staples", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_SS.png", replace
+graph export "$workdir/graphs/gap_SS.png", replace
 
 spmap prodgap_perc_dairy using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Starchy staples production gap (in perc)") clmethod(custom) clbreaks(-18 20 40 60 80 100 6500)  name(map_dairy, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Dairy", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_dairy.png", replace
+graph export "$workdir/graphs/gap_dairy.png", replace
 
 spmap prodgap_perc_fish using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fish production gap (in perc)") clmethod(custom) clbreaks(-1200 20 40 60 80 100 12000)  name(map_fish, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Fish", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_fish.png", replace
+graph export "$workdir/graphs/gap_fish.png", replace
 
 spmap prodgap_perc_meat using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Meat production gap (in perc)") clmethod(custom) clbreaks(0 20 40 60 80 100 1700)  name(map_meat, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Meat", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_meat.png", replace
+graph export "$workdir/graphs/gap_meat.png", replace
 
 spmap prodgap_perc_LNS using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Legumes, nuts, and seeds" "production gap (in perc)") clmethod(custom) clbreaks(-800 20 40 60 80 100 22000)  name(map_LNS, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Legumes, nuts, and seeds", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_LNS.png", replace
+graph export "$workdir/graphs/gap_LNS.png", replace
 
 spmap productdeprv using _worldmap_shp, id(_ID) fcolor(red*1.9 red*1.6 red*1.3 red*1 red*0.7 red*0.4 red*0.1) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Number of food groups self-sufficient at") clmethod(custom) clbreaks(0 1 2 3 4 5 6 7)  name(map_depr, replace) legend(order(1 "No data" 2 "0" 3 "1" 4 "2" 5 "3" 6 "4" 7 "5" 8 "6") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Self-sufficiency", size(small))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/productdpr_map.png", replace
+graph export "$workdir/graphs/productdpr_map.png", replace
 
 //one large legend
 graph set window fontface "Times New Roman"
@@ -84,22 +87,22 @@ graph export "$workdir/graphs/worldmap_FGgaps_EAT.png", replace
 graph set window fontface "Times New Roman"
 
 spmap prodgap_perc_cap_SS using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Starchy staples production gap (in perc)") clmethod(custom) clbreaks(-650 20 40 60 80 100 1005)  name(map_SS, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Starchy Staples", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_cap_SS.png", replace
+graph export "$workdir/graphs/gap_cap_SS.png", replace
 
 spmap prodgap_perc_cap_dairy using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Starchy staples production gap (in perc)") clmethod(custom) clbreaks(-18 20 40 60 80 100 6500)  name(map_dairy, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Dairy", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_cap_dairy.png", replace
+graph export "$workdir/graphs/gap_cap_dairy.png", replace
 
 spmap prodgap_perc_cap_fish using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fish production gap (in perc)") clmethod(custom) clbreaks(-1200 20 40 60 80 100 12000)  name(map_fish, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Fish", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_cap_fish.png", replace
+graph export "$workdir/graphs/gap_cap_fish.png", replace
 
 spmap prodgap_perc_cap_meat using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Meat production gap (in perc)") clmethod(custom) clbreaks(0 20 40 60 80 100 1700)  name(map_meat, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Meat", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_cap_meat.png", replace
+graph export "$workdir/graphs/gap_cap_meat.png", replace
 
 spmap prodgap_perc_cap_LNS using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Legumes, nuts, and seeds" "production gap (in perc)") clmethod(custom) clbreaks(-800 20 40 60 80 100 22000)  name(map_LNS, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Legumes, nuts, and seeds", size(medsmall))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/gap_cap_LNS.png", replace
+graph export "$workdir/graphs/gap_cap_LNS.png", replace
 
 spmap productdeprv_cap using _worldmap_shp, id(_ID) fcolor(red*1.9 red*1.6 red*1.3 red*1 red*0.7 red*0.4 red*0.1) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Number of food groups self-sufficient at") clmethod(custom) clbreaks(0 1 2 3 4 5 6 7)  name(map_depr, replace) legend(order(1 "No data" 2 "0" 3 "1" 4 "2" 5 "3" 6 "4" 7 "5" 8 "6") size(vsmall) symxsize(2) symysize(2) position(8)) graphregion(color(white)) title("Self-sufficiency", size(small))
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/productdpr_cap_map.png", replace
+graph export "$workdir/graphs/productdpr_cap_map.png", replace
 
 //one large legend
 graph set window fontface "Times New Roman"
@@ -199,10 +202,10 @@ graph export "$workdir/graphs/worldmap_FGgaps_capchange.png", replace
 
 
 *** Change in gaps with 2032 projections ***
-cd "/Users/jonasstehl/ownCloud/Healthy food poverty/Analysis/data/shapefiles"
+cd "$datadir/shapefiles"
 //spshape2dta WB_countries_Admin0_10m, replace saving(_worldmap)
 
-use "/Users/jonasstehl/ownCloud/Healthy food poverty/Analysis/data/shapefiles/_worldmap.dta", clear
+use "$datadir/shapefiles/_worldmap.dta", clear
 ren ISO_A3_EH iso3
 replace iso3 = "NOR" if WB_A3 == "NOR"
 duplicates list iso3

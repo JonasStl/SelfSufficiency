@@ -1,5 +1,5 @@
-global workdir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis"
-global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data"
+global workdir "./SelfSufficiency/Analysis"
+global datadir "./SelfSufficiency/Analysis/data"
 
 
 ********************************************************************************
@@ -7,7 +7,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 
 *** Prepare FAOSTAT data ***
-import delimited "/Users/jonasstehl/ownCloud/Data/FAOSTAT Trade/Trade Matrix/Trade_DetailedTradeMatrix_E_All_Data_(Normalized)/Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv", clear // downloaded on November 26th, 2023
+import delimited "$datadir/Trade_DetailedTradeMatrix_E_All_Data_(Normalized)/Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv", clear // downloaded on November 26th, 2023
 
 keep if year == 2020
 keep if element == "Import Quantity"
@@ -296,7 +296,7 @@ twoway (scatter prodgap_perc_veg importshare if importrank == 1 & foodgroup == "
 // Combine 
 graph set window fontface "Times New Roman"
 grc1leg2 g4 g6 g3 g1 g5 g2, rows(3) cols(2) imargin(zero) ysize(2.3) xsize(2) graphregion(color(white)) ycommon xcommon xtob1title ytol1title legendfrom(g1) ring(100)
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/shockrisk_worldregion.png", replace
+graph export "$workdir/graphs/shockrisk_worldregion.png", replace
 
 
 *** 2 Importers (not used in paper) ***
@@ -318,7 +318,7 @@ twoway (scatter prodgap_perc_veg twoimportshare if importrank == 1 & twoimportsh
 
 graph combine g2 g3 g4 g5 g1 g6, rows(3) cols(2) ysize(2) xsize(2) imargin(zero) graphregion(color(white)) /*ycommon xcommon*/
 //grc1leg2 g2 g3 g4 g5 g1 g6, rows(3) cols(2) ysize(2) xsize(2) graphregion(color(white)) //ytitlefrom(g2) 
-graph export "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/graphs/shockrisk_twoimporters.png", replace
+graph export "$workdir/graphs/shockrisk_twoimporters.png", replace
 
 
 
