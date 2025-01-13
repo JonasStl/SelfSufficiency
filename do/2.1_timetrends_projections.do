@@ -5,7 +5,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 ************************ Agricultural Outlook Database	************************
 ********************************************************************************
-import delimited "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/Agricultural Outlook Database/HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv", clear
+import delimited "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data/Agricultural Outlook Database/HIGH_AGLINK_2023-2023-1-EN-20240109T100123.csv", clear // Agricultural Outlook Database 2023-2032, version: downloaded on January 9th, 2024 
 
 * Drop unnecessary variables
 drop referenceperiodcode referenceperiod flagcodes flags variable unit unitcode v8 powercodecode powercode
@@ -20,7 +20,7 @@ drop v6
 
 reshape wide value, i(location country commodity v4 time) j(element)
 foreach var of varlist value1 value2 value3 value4 {
-	replace `var' = 0 if `var' == .
+	replace `var' = 0 if `var' == . // countries with no production/use are missing and need to be replaced
 }
 
 
@@ -72,8 +72,10 @@ preserve
 keep if inlist(v4,"Beef and veal","Sheepmeat","Pigmeat","Poultry meat")
 collapse (mean) growth_biofuel growth_feed growth_otheruse growth_production, by(country year)
 gen v4 = "Other meat (calculated)"
+count if v4 == "Other meat (calculated)"
+local obs = `r(N)'
 expand 2
-replace v4 = "Offals (calculated)" in 1/470
+replace v4 = "Offals (calculated)" in 1/`obs'
 
 tempfile temp0
 save `temp0'
@@ -121,7 +123,7 @@ save "$datadir/timetrends_outlook_region.dta", replace
 
 
 ********************************************************************************
-* 							Calculate production 								*
+* 						Calculate adjusted production 							*
 ********************************************************************************
 use "$datadir/timetrends_base2020.dta", clear
 merge m:1 itemcode using "$datadir/Outlook_FAOFBS.dta", keep(match master) nogen

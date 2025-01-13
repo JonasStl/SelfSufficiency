@@ -7,7 +7,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 
 *** Prepare FAOSTAT data ***
-import delimited "/Users/jonasstehl/ownCloud/Data/FAOSTAT Trade/Trade Matrix/Trade_DetailedTradeMatrix_E_All_Data_(Normalized)/Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv", clear
+import delimited "/Users/jonasstehl/ownCloud/Data/FAOSTAT Trade/Trade Matrix/Trade_DetailedTradeMatrix_E_All_Data_(Normalized)/Trade_DetailedTradeMatrix_E_All_Data_(Normalized).csv", clear // downloaded on November 26th, 2023
 
 keep if year == 2020
 keep if element == "Import Quantity"
@@ -34,7 +34,7 @@ drop if inlist(itemcode,265,339,340,334,60,331,329,336,270,280,292,267,36) //Oil
 gen foodgroup = ""
 replace foodgroup = "Dairy" if inlist(itemcode,1021,1022,882, 885, 886, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 903, 904, 905, 907, 908, 909, 953,882,885,886,887, 888, 889)
 
-//replace foodgroup = "Fish" if inlist(itemcode,) In separate dataset: https://www.fao.org/fishery/statistics-query/en/trade/trade_quantity
+//Fish is in separate dataset: https://www.fao.org/fishery/statistics-query/en/trade/trade_quantity
 
 replace foodgroup = "Fruits" if inlist(itemcode,249,250,260,262,486, 490, 495, 497, 507, 512, 515, 521, 523, 526, 527, 530, 531, 534, 536, 537, 538, 539, 541, 544, 547, 549, 550, 552, 554, 558, 560, 561, 566, 567, 568, 569, 570, 571, 572, 574, 575, 577, 583, 584, 587, 591, 592, 600, 603, 604, 619, 620, 623, 624, 625)
 
@@ -102,7 +102,7 @@ merge m:1 country_name using "$datadir/productiongap.dta", nogen keep(match mast
 graph set window fontface "Times New Roman"
 
 
-*** Color by world region ***
+*** SI Figure 3 ***
 {
 //LNS
 sum importrank if importrank == 1 & foodgroup == "Legumes, nuts and seeds" & importshare > 50 & prodgap_perc_LNS < 50

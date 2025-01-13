@@ -22,7 +22,7 @@ spmap unions using _worldmap_shp, id(_ID) fcolor(red midblue green yellow orange
 
 *** Gap for various food groups on country-level ***
 
-*Livewell Diet
+* Figure 1: Livewell Diet
 graph set window fontface "Times New Roman"
 
 spmap prodgap_perc_fruit using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fruits production gap (in perc)") clmethod(custom) clbreaks(-40 20 40 60 80 100 1500)  name(map_fruits, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(medium) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Fruits", size(medsmall))
@@ -55,7 +55,7 @@ grc1leg2 map_fruits map_veg map_dairy map_fish map_meat map_LNS map_SS , rows(4)
 graph export "$workdir/graphs/worldmap_FGgaps.png", replace 
 
 
-*EAT-Lancet
+* SI Figure 2: EAT-Lancet
 graph set window fontface "Times New Roman"
 
 spmap eatgap_perc_fruit using _worldmap_shp, id(_ID) fcolor(red*1.5 red*1.2 red*0.9 red*0.6 red*0.3 midblue*0.3) osize(vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fruits production gap (in perc)") clmethod(custom) clbreaks(-30 20 40 60 80 100 1100)  name(map_fruits_eat, replace) legend(order(1 "No data" 2 "0   - <20%" 3 "20 - <40%" 4 "40 - <60%" 5 "60 - <80%" 6 "80 - <100%" 7 "Sufficient production (≥100%)") size(medium) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Fruits", size(medsmall))
@@ -79,7 +79,7 @@ grc1leg2 map_fruits_eat map_veg_eat map_dairy_eat map_fish_eat map_meat_eat map_
 graph export "$workdir/graphs/worldmap_FGgaps_EAT.png", replace 
 
 
-*** Gaps adjusted for future production ***
+*** Gaps adjusted for future production (not included in manuscript or SI material) ***
 *Livewell Diet
 graph set window fontface "Times New Roman"
 
@@ -143,7 +143,7 @@ foreach group in LNS SS dairy fish meat {
 }
 
 
-*Livewell Diet
+* SI Figure 4: Livewell Diet
 graph set window fontface "Times New Roman"
 
 // Starchy staples
@@ -154,6 +154,7 @@ bysort REGION_WB: fre prodgap_change_SS
 sum prodgap_cap_change_SS if prodgap_perc_SS < 100
 bysort REGION_WB: sum prodgap_cap_change_SS if prodgap_perc_SS < 100
 
+
 // Dairy
 spmap prodgap_change_dairy using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Dairy production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_dairy, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(large) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Dairy", size(medsmall))
 
@@ -163,6 +164,7 @@ sum prodgap_perc_dairy if prodgap_perc_dairy < 100
 sum prodgap_cap_change_dairy if prodgap_perc_dairy < 100
 bysort REGION_WB: sum prodgap_cap_change_dairy if prodgap_perc_dairy < 100
 
+
 // Fish
 spmap prodgap_change_fish using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fish production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_fish, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Fish", size(medsmall))
 
@@ -170,6 +172,7 @@ fre prodgap_change_fish
 bysort REGION_WB: fre prodgap_change_fish
 sum prodgap_cap_change_fish if prodgap_perc_fish < 100
 bysort REGION_WB: sum prodgap_cap_change_fish if prodgap_perc_fish < 100
+
 
 // Meat
 spmap prodgap_change_meat using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Meat production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_meat, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Meat", size(medsmall))
@@ -179,6 +182,7 @@ bysort REGION_WB: fre prodgap_change_meat
 sum prodgap_cap_change_meat if prodgap_perc_meat < 100
 bysort REGION_WB: sum prodgap_cap_change_meat if prodgap_perc_meat < 100
 
+
 // LNS
 spmap prodgap_change_LNS using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Legumes, nuts, and seeds production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_LNS, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Legumes, nuts, and seeds", size(medsmall))
 
@@ -186,6 +190,7 @@ fre prodgap_change_LNS
 bysort REGION_WB: fre prodgap_change_LNS
 sum prodgap_cap_change_LNS if prodgap_perc_LNS < 100
 bysort REGION_WB: sum prodgap_cap_change_LNS if prodgap_perc_LNS < 100
+
 
 //one large legend
 graph set window fontface "Times New Roman"
@@ -205,6 +210,8 @@ duplicates drop iso3, force
 
 merge 1:1 iso3 using "$datadir/timetrends_productiongap_2032.dta", //nogen
 
+
+
 * Create new variable
 foreach group in LNS SS dairy fish meat {
 	gen prodgap_change_`group' = prodgap_change_`group'2032
@@ -214,7 +221,7 @@ foreach group in LNS SS dairy fish meat {
 }
 
 
-*Livewell Diet
+* SI Figure 6: Livewell Diet
 graph set window fontface "Times New Roman"
 
 // Starchy staples
@@ -225,6 +232,7 @@ bysort REGION_WB: fre prodgap_change_SS
 sum prodgap_change_SS2032 if SS_2020_SS == 0
 bysort REGION_WB: sum prodgap_change_SS2032 if SS_2020_SS == 0
 
+
 // Dairy
 spmap prodgap_change_dairy using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Dairy production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_dairy, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(large) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Dairy", size(medsmall))
 
@@ -232,6 +240,7 @@ fre prodgap_change_dairy
 bysort REGION_WB: fre prodgap_change_dairy
 sum prodgap_change_dairy2032 if SS_2020_dairy == 0
 bysort REGION_WB: sum prodgap_change_dairy2032 if SS_2020_dairy == 0
+
 
 // Fish
 spmap prodgap_change_fish using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Fish production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_fish, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Fish", size(medsmall))
@@ -241,6 +250,7 @@ bysort REGION_WB: fre prodgap_change_fish
 sum prodgap_change_fish2032 if SS_2020_fish == 0
 bysort REGION_WB: sum prodgap_change_fish2032 if SS_2020_fish == 0
 
+
 // Meat
 spmap prodgap_change_meat using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Meat production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_meat, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Meat", size(medsmall))
 
@@ -249,6 +259,7 @@ bysort REGION_WB: fre prodgap_change_meat
 sum prodgap_change_meat2032 if SS_2020_meat == 0
 bysort REGION_WB: sum prodgap_change_meat2032 if SS_2020_meat == 0
 
+
 // LNS
 spmap prodgap_change_LNS using _worldmap_shp, id(_ID) fcolor(red*0.5 sand*0.5 midgreen*0.5 midgreen*1 blue*0.6 midblue*0.3 cranberry) osize( vvthin vvthin vvthin vvthin vvthin vvthin vvthin) ndfcolor(gs12) ndsize(vvthin) legtitle("Legumes, nuts, and seeds production gap change (in percentage points)") clmethod(custom) clbreaks( -50 -.000001 .000001 20 100 200 300 400)  name(map_LNS, replace) legend(order(1 "No data" 2 "No self-sufficiency: Change of -50 - <0 p.p." 3 "No production" 4 "No self-sufficiency: Change of 0 - <20 p.p." 5 "No self-sufficiency: Change of >30 p.p." 6 "Achieved self-sufficiency (≥100%)" 7 "Maintained self-sufficiency (≥100%)" 8 "Lost self-sufficiency") size(medlarge) symxsize(4) symysize(4) position(8)) graphregion(color(white)) title("Legumes, nuts, and seeds", size(medsmall))
 
@@ -256,6 +267,7 @@ fre prodgap_change_LNS
 bysort REGION_WB: fre prodgap_change_LNS
 sum prodgap_change_LNS2032 if SS_2020_LNS == 0
 bysort REGION_WB: sum prodgap_change_LNS2032 if SS_2020_LNS == 0
+
 
 //one large legend
 graph set window fontface "Times New Roman"

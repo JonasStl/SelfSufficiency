@@ -76,7 +76,9 @@ global lbl_meat = "Meat"
 global lbl_fruit = "Fruits"
 global lbl_veg = "Vegetables"
 
-* Analysis: Coverage yes/no (extensive margin)
+*-------------------------------
+*** SI Figure 5: Coverage yes/no 
+*-------------------------------
 graph set window fontface "Times New Roman"
 
 foreach group in LNS SS dairy fish meat {
@@ -125,8 +127,9 @@ list productdeprv coverage_* if year == 2010 & UNregions == "World", abbreviate(
 list productdeprv coverage_* if year == 2022 & UNregions == "World", abbreviate(20) 
 list productdeprv coverage_* if year == 2032 & UNregions == "World", abbreviate(20) 
 
-
-*** Large table with 2010, 2022 and 2032 ***
+*-------------------------------------------------------
+*** SI Table 2: Large table with 2010, 2022 and 2032 ***
+*-------------------------------------------------------
 use "$datadir/timetrends_productiongap.dta", clear
 
 * Identify 2010 samples
@@ -156,7 +159,7 @@ keep if coverage_SS_Nrestrict == 1
 
 *Is a country SS in 2022?
 foreach group in LNS SS dairy fish meat fruit veg {
-	gen _SS_2022_`group' = coverage_`group' if year == 2010
+	gen _SS_2022_`group' = coverage_`group' if year == 2022
 	bysort country_name: egen SS_2022_`group' = max(_SS_2022_`group')
 	drop _SS_2022_`group'
 }
@@ -205,7 +208,7 @@ putexcel F5 = matrix(C), nformat(#.00)
 
 
 * Intensive margin
-putexcel C6:J6 = "Panel 2: Self-sufficiency of countries <100% in 2010", merge
+putexcel C6:J6 = "Panel 2: Self-sufficiency of countries <100% in 2022", merge
 putexcel C7 = "2010"
 putexcel C8 = "2020"
 putexcel C9 = "2032"

@@ -5,7 +5,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 ************************ Food Group Recommendations WWF ************************
 ********************************************************************************
-import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear
+import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear // per capita per day Livewell food group requirements based on Table 4 of "Eating for net zero technical report", Excel sheet uploaded on GitHub
 encode Foodgroup, gen(fg)
 ren Age15_3 Age1_3
 local agegroups = "Age11_18 Age1_3 Age19_64 Age4_10 Age65"
@@ -38,7 +38,7 @@ save `diet_wwf'
 ************************** Demographic Scaling Factors *************************
 ********************************************************************************
 
-import excel "$datadir/population_bothsexes.xlsx", sheet("Estimates") cellrange(A17:DH20541) firstrow clear
+import excel "$datadir/population_bothsexes.xlsx", sheet("Estimates") cellrange(A17:DH20541) firstrow clear // This is the sheet "Estimates" of the World Population Prospects 2022 (WPP2022_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx)
 
 drop if ISO3Alphacode == ""	// drop aggregates
 keep if Year == 2020
@@ -57,7 +57,7 @@ egen pop_65 = rowtotal(BY-DH)
 *** Dietary recommendations
 merge m:1 Variant using `diet_wwf', nogen
 
-*** Scale recommendations up on population level
+*** Scale recommendations up to population level
 egen totpop = rowtotal(pop_1_3 pop_4_10 pop_11_18 pop_19_64 pop_65)
 
 foreach groups in dairy fish fruit LNS SS meat veg {
@@ -77,14 +77,16 @@ gen eatlancet_SS_pc = 282
 gen eatlancet_meat_pc = 43
 gen eatlancet_veg_pc = 300
 
-save "$datadir/fooddemand.dta", replace
+drop *_1_3 *_4_10 *_11_18 *_19_64 *_65
+
+save "$datadir/fooddemand.dta", replace // population and per-capita level food demand
 
 
 ********************************************************************************
-****************** Agricultural Outlook Matching Preparation *******************
+**************** Agricultural Outlook Name Matching Preparation ****************
 ********************************************************************************
 
-import excel "$workdir/documents/Outlook_FAOFBS matching.xls", clear firstrow
+import excel "$workdir/documents/Outlook_FAOFBS matching.xls", clear firstrow // name matching sheet available on GitHub
 drop D
 ren ItemCode itemcode
 
@@ -96,7 +98,7 @@ save "$datadir/Outlook_FAOFBS.dta", replace
 ********************************************************************************
 
 *** FAO Data ***
-import delimited "/Users/jonasstehl/ownCloud/Data/Food Balance Sheets/FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear 
+import delimited "/Users/jonasstehl/ownCloud/Data/Food Balance Sheets/FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear // downloaded on July 24th, 2024
 keep if year == 2020 
 drop if areacode > 1000 // drop aggregates
 
@@ -119,10 +121,10 @@ drop if inlist(itemcode,2744) //eggs
 drop if inlist(itemcode,2905,2907,2911,2912,2913,2914,2918,2919,2943,2945,2946,2949,2948,2960,2961) //Food group aggregates
 
 * Only keep relevant elements
-keep if /*element == "Domestic supply quantity" | element == "Food" |*/ element == "Production" | /*element == "Total Population - Both sexes" |*/ element == "Feed" | element == "Losses" | element == "Other uses (non-food)" | element == "Seed" | element == "Processing"
+keep if element == "Production" | element == "Feed" | element == "Losses" | element == "Other uses (non-food)" | element == "Seed" | element == "Processing"
 
 
-*** Group countries to various regions (used for several matchings) ***
+*** Group countries according to various regional definitions (used for several matchings) ***
 {
 ren area country_name
 replace country_name = "Netherlands" if country_name == "Netherlands (Kingdom of the)"
@@ -246,9 +248,9 @@ reshape wide value, i(outlookregions econunions UNregions UNregions_det region w
 foreach var of varlist value5123 value5154 value5511 value5521 value5527 value5131 {
 	replace `var' = 0 if `var' == . 
 }
-gen productionadj = value5511 - (value5123 + value5154 + value5521 + value5527)
-replace productionadj = value5511 - (value5123 + value5154 + value5521 + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563) // to account for processing into oil
-replace productionadj = 0 if productionadj < 0
+gen productionadj = value5511 - (value5123 + value5154 + value5521 + value5527) // adjust production for food loss, other non-food uses, use for feed, use for seed
+replace productionadj = value5511 - (value5123 + value5154 + value5521 + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563) // adjust oil seed production to account for processing into oil (food use but category change)
+replace productionadj = 0 if productionadj < 0 
 
 save "$datadir/timetrends_base2020.dta", replace // save for time trend analysis
 
@@ -256,17 +258,18 @@ save "$datadir/timetrends_base2020.dta", replace // save for time trend analysis
 *** Matching with Agricultural Outlook Projection Data ***
 merge m:1 itemcode using "$datadir/Outlook_FAOFBS.dta", keep(match master) nogen
 merge m:1 country_name Outlookname using "$datadir/outlook_country.dta", keep(match master) gen(outlook_country)
-merge m:1 outlookregions Outlookname using "$datadir/outlook_region.dta", gen(outlook_region) update keepusing(growth_biofuel growth_feed growth_otheruse growth_production)
+merge m:1 outlookregions Outlookname using "$datadir/outlook_region.dta", gen(outlook_region) update keepusing(growth_biofuel growth_feed growth_otheruse growth_production) // update missing variables without country-level growth values
 drop if outlook_region==2
 
-* Calculate future production
+* Estimate future production
 gen productionadj_2032 = (value5511*growth_production) - (value5123 + value5154 + (value5521*growth_feed) + value5527)
-replace productionadj_2032 = (value5511*growth_production) - (value5123 + value5154 + (value5521*growth_feed) + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563)
+replace productionadj_2032 = (value5511*growth_production) - (value5123 + value5154 + (value5521*growth_feed) + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563) // adjust oilseeds use
 replace productionadj_2032 = 0 if productionadj_2032 < 0
 /*
 I used projected agricultural production for each food item from Agricultural Outlook. Similarly, I adjusted feed use.
 I assumed food losses, non-food uses, and use for seed to be constant -> I took 2020 values.
 */
+drop outlook_country outlook_region
 
 *** Calculation of daily per person gram production ***
 gen value = (productionadj/365)*1000*1000 //Calculate production per day in g (before in tonns)
@@ -306,8 +309,8 @@ replace HDB_FGs = "Milk and dairy products" if inlist(foodgroups1,"milk and dair
 replace HDB_FGs = "Fish and seafood" if inlist(foodgroups1,"fish and seafood")
 replace HDB_FGs = "Legumes, nuts and seeds" if inlist(foodgroups1,"nuts","pulses","oilseeds")
 
-* Calculate true consumption
-merge m:1 region foodgroups1 using "$datadir/conversionfactors.dta", nogen // from Gustavsson
+* Adjust for household levle loss and edible portions
+merge m:1 region foodgroups1 using "$datadir/conversionfactors.dta", nogen // from Gustavsson et al. 2011 (data available on GitHub)
 
 gen consumption = .
 replace consumption = value*conversionfactor if value >= 0
@@ -396,13 +399,14 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	lab var consumptionpc_`group' "Domestic supply of `group' per capita per day (in g)"
 }
 
+// 2032 production
 foreach group in LNS SS dairy fish meat {
 	lab var consumption_cap_`group' "Domestic supply of `group' per day (in g), 2032 production"
 	gen consumptionpc_cap_`group' = consumption_cap_`group'/totpop
 	lab var consumptionpc_cap_`group' "Domestic supply of `group' per capita per day (in g), 2032 production"
 }
 
-* Calculate difference in percent if a healthy diet was adopted
+* Calculate difference in percent if a healthy/recommended diet was adopted
 foreach group in LNS SS dairy fish fruit meat veg {
 	gen prodgap_abs_`group' = consumptionpc_`group' - livewell_`group'_pc
 	lab var prodgap_abs_`group' "Absolute `group' production gap to the livewell recommendation (g/capita/day)"
@@ -418,6 +422,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	lab var eatgap_perc_`group' "Percent `group' production gap to the EAT-Lancet recommendation (in perc)"
 }
 
+// 2032 production
 foreach group in LNS SS dairy fish meat {
 	gen prodgap_abs_cap_`group' = consumptionpc_cap_`group' - livewell_`group'_pc
 	lab var prodgap_abs_cap_`group' "Absolute `group' production gap to the livewell recommendation (g/capita/day)"
@@ -460,7 +465,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	replace productdeprv_eat = . if eatgap_abs_`group' == .
 }
 
-// with production capacities
+// with 2032 production
 gen productdeprv_cap = 0
 gen productdeprv_cap_eat = 0
 
@@ -529,7 +534,7 @@ save "$datadir/productiongap.dta", replace
 ********************************************************************************
 clear
 	cap ssc install wbopendata
-	wbopendata, indicator(NY.GDP.PCAP.PP.KD;NE.CON.PRVT.PP.KD;SI.POV.NAHC) long year(2020) clear
+	wbopendata, indicator(NY.GDP.PCAP.PP.KD;NE.CON.PRVT.PP.KD;SI.POV.NAHC) long year(2020) clear // version: November 5th, 2024
 	keep countrycode countryname incomelevel incomelevelname regionname year ny_gdp_pcap_pp_kd /*per capita GDP in 2017 PPP*/ ne_con_prvt_pp_kd /*Consumption expenditure in 2017 PPP*/ si_pov_nahc /* Headcount national poverty lines*/
 	
 	drop if regionname == "Aggregates"

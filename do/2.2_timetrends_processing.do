@@ -9,7 +9,7 @@ global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data
 ********************************************************************************
 ************************ Food Group Recommendations WWF ************************
 ********************************************************************************
-import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear
+import excel "$datadir/foodgroups_wwf.xlsx", firstrow clear // per capita per day Livewell food group requirements based on Table 4 of "Eating for net zero technical report", Excel sheet uploaded on GitHub
 encode Foodgroup, gen(fg)
 ren Age15_3 Age1_3 
 local agegroups = "Age11_18 Age1_3 Age19_64 Age4_10 Age65"
@@ -42,13 +42,13 @@ save `diet_wwf'
 ************************** Demographic Scaling Factors *************************
 ********************************************************************************
 * 2010- 2023
-import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Estimates") cellrange(A17:DH22000) firstrow clear
+import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Estimates") cellrange(A17:DH22000) firstrow clear // World Population Prospects 2022
 
 tempfile populationestimates
 save `populationestimates'
 
 * 2024- 2032
-import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Medium variant") cellrange(A17:DH22874) firstrow clear
+import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Medium variant") cellrange(A17:DH22874) firstrow clear // World Population Prospects 2022
 
 append using `populationestimates'
 
@@ -92,6 +92,7 @@ gen eatlancet_SS_pc = 282
 gen eatlancet_meat_pc = 43
 gen eatlancet_veg_pc = 300
 
+drop *_1_3 *_4_10 *_11_18 *_19_64 *_65
 ren Year year
 save "$datadir/timetrends_fooddemand.dta", replace
 
@@ -102,7 +103,7 @@ save "$datadir/timetrends_fooddemand.dta", replace
 ********************************************************************************
 
 *** FAO Data ***
-import delimited "/Users/jonasstehl/ownCloud/Data/Food Balance Sheets/FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear 
+import delimited "/Users/jonasstehl/ownCloud/Data/Food Balance Sheets/FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear // downloaded on July 24th, 2024
 
 drop if areacode > 1000 // drop aggregates
 
@@ -129,6 +130,7 @@ keep if /*element == "Domestic supply quantity" | element == "Food" |*/ element 
 
 
 ******* Group countries to various regions (used for several matchings) ********
+{
 ren area country_name
 replace country_name = "Netherlands" if country_name == "Netherlands (Kingdom of the)"
 
@@ -220,7 +222,7 @@ replace outlookregions = "ASIA" if (region == "South and Southeast Asia" | inlis
 replace outlookregions = "Middle East" if worldregions == "Middle East" & outlookregions == ""
 replace outlookregions = "NORTH AMERICA" if UNregions_det == "Northern America" & outlookregions == ""
 replace outlookregions = "Central Asia" if UNregions_det == "Central Asia" & outlookregions == ""
-
+}
 
 ********************************************************************************
 
@@ -231,7 +233,7 @@ replace value = value*1000	// original value in thsd. tonnes
 
 reshape wide value, i(outlookregions UNregions UNregions_det region worldregion iso3 country_name year itemcode item) j(elementcode)
 foreach var of varlist value5123 value5154 value5511 value5521 value5527 value5131 {
-	replace `var' = 0 if `var' == . // check whether this is valid!
+	replace `var' = 0 if `var' == . 
 }
 gen productionadj = value5511 - (value5123 + value5154 + value5521 + value5527)
 replace productionadj = value5511 - (value5123 + value5154 + value5521 + value5527 + value5131) if inlist(itemcode,2555,2557,2560,2561,2570,2563) // to account for processing into oil
@@ -284,11 +286,11 @@ replace HDB_FGs = "Legumes, nuts and seeds" if inlist(foodgroups1,"nuts","pulses
 
 
 * Calculate true consumption
-merge m:1 region foodgroups1 using "$datadir/conversionfactors.dta", nogen // from Gustavsson
+merge m:1 region foodgroups1 using "$datadir/conversionfactors.dta", nogen // from Gustavsson et al. 2011 (data available on GitHub)
 
 gen consumption = .
 replace consumption = value*conversionfactor if value >= 0
-//replace consumption = value/conversionfactor if value < 0
+replace consumption = value/conversionfactor if value < 0
 
 
 * Aggregate over HDB food groups
@@ -353,7 +355,7 @@ replace iso3 = "VEN" if country_name == "Venezuela (Bolivarian Republic of)"
 
 * Merge food demand data
 drop if country_name == "China"
-merge 1:1 iso3 year using "$datadir/timetrends_fooddemand.dta", keep(match master) nogen // 1 country not matched
+merge 1:1 iso3 year using "$datadir/timetrends_fooddemand.dta", keep(match master) nogen // Netherlands Antilles (former) not matched (will be dropped anyway)
 
 *Calculate per capita values
 foreach group in LNS SS dairy fish fruit meat veg {
@@ -379,7 +381,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	lab var eatgap_perc_`group' "Percent `group' production gap to the EAT-Lancet recommendation (in perc)"
 }
 
-export excel country_name year prodgap_abs_* prodgap_perc_* using "$workdir/timetrends_productiongap.xlsx", replace firstrow(varlabels) keepcellfmt
+export excel country_name year prodgap_abs_* prodgap_perc_* using "$workdir/tables/timetrends_productiongap.xlsx", replace firstrow(varlabels) keepcellfmt
 
 
 * Food group deprivation
@@ -394,6 +396,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	replace coverage_`group' = 0 if prodgap_abs_`group' < 0 & prodgap_abs_`group' != .
 	
 	replace productdeprv = productdeprv + 1 if prodgap_abs_`group' >= 0 & prodgap_abs_`group' != .
+	replace productdeprv = . if prodgap_abs_`group' == .
 	
 	//EAT-Lancet
 	gen eatcoverage_`group' = .
@@ -401,6 +404,7 @@ foreach group in LNS SS dairy fish fruit meat veg {
 	replace eatcoverage_`group' = 0 if eatgap_abs_`group' < 0 & eatgap_abs_`group' != .
 	
 	replace productdeprv_eat = productdeprv_eat + 1 if eatgap_abs_`group' >= 0 & eatgap_abs_`group' != .
+	replace productdeprv_eat = . if eatgap_abs_`group' == .
 }
 
 
