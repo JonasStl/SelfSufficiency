@@ -1,5 +1,5 @@
-global workdir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis"
-global datadir "/Users/jonasstehl/ownCloud/Tandem/Healthy Diet Gap/Analysis/data"
+global workdir "./SelfSufficiency/Analysis"
+global datadir "./SelfSufficiency/Analysis/data"
 
 
 ********************************************************************************
@@ -98,7 +98,7 @@ save "$datadir/Outlook_FAOFBS.dta", replace
 ********************************************************************************
 
 *** FAO Data ***
-import delimited "/Users/jonasstehl/ownCloud/Data/Food Balance Sheets/FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear // downloaded on July 24th, 2024
+import delimited "$datadir/FoodBalanceSheets_E_All_Data_(Normalized).csv", clear // downloaded on July 24th, 2024
 keep if year == 2020 
 drop if areacode > 1000 // drop aggregates
 
