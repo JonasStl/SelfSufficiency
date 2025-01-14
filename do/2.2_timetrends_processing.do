@@ -42,13 +42,13 @@ save `diet_wwf'
 ************************** Demographic Scaling Factors *************************
 ********************************************************************************
 * 2010- 2023
-import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Estimates") cellrange(A17:DH22000) firstrow clear // World Population Prospects 2022
+import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Estimates") cellrange(A17:DH22000) firstrow clear // World Population Prospects 2024
 
 tempfile populationestimates
 save `populationestimates'
 
 * 2024- 2032
-import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Medium variant") cellrange(A17:DH22874) firstrow clear // World Population Prospects 2022
+import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Medium variant") cellrange(A17:DH22874) firstrow clear // World Population Prospects 2024
 
 append using `populationestimates'
 
