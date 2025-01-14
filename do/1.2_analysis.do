@@ -21,7 +21,7 @@ di = `nonmis' - (SS[1,1] + SS[2,1]) " of `nonmis' or " ((`nonmis' - (SS[1,1] + S
 di = "Countries self-sufficient in 2 to 5 food groups"
 di = (SS[3,1] + SS[4,1] + SS[5,1] + SS[6,1]) " of `nonmis' or " (((SS[3,1] + SS[4,1] + SS[5,1] + SS[6,1]))/`nonmis')*100 "%"
 
-di = "Countries self-sufficient in more than 5 food groups"
+di = "Countries self-sufficient in 5 or more food groups"
 di = (SS[6,1] + SS[7,1] + SS[8,1]) " of `nonmis' or " (((SS[6,1] + SS[7,1] + SS[8,1]))/`nonmis')*100 "%"
 
 fre country_name if productdeprv == 7
