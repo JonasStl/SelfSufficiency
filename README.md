@@ -47,7 +47,7 @@ Run the STATA do.files in the following order:
 
    Uses:
    - Food group recommendations: foodgroups_wwf.xlsx
-   - Population data: population_bothsexes.xlsx
+   - Population data: WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx
    - Agricultural Outlook FAO FBS matching data: Outlook_FAOFBS matching.xls
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
@@ -63,7 +63,7 @@ Run the STATA do.files in the following order:
 
    Uses:
    - Food group recommendations: foodgroups_wwf.xlsx
-   - Population data: population_bothsexes.xlsx
+   - Population data: WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx
    - FAO Food Balance Sheets: FoodBalanceSheets_E_All_Data_(Normalized)/FoodBalanceSheets_E_All_Data_(Normalized).csv
    - Conversion factors: conversionfactors.dta
 
