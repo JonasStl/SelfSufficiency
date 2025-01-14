@@ -38,7 +38,7 @@ save `diet_wwf'
 ************************** Demographic Scaling Factors *************************
 ********************************************************************************
 
-import excel "$datadir/population_bothsexes.xlsx", sheet("Estimates") cellrange(A17:DH20541) firstrow clear // This is the sheet "Estimates" of the World Population Prospects 2022 (WPP2022_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx) // accessed: 27.08.2023
+import excel "$datadir/WPP2024_POP_F01_1_POPULATION_SINGLE_AGE_BOTH_SEXES.xlsx", sheet("Estimates") cellrange(A17:DH22000) firstrow clear // World Population Prospects 2024
 
 drop if ISO3Alphacode == ""	// drop aggregates
 keep if Year == 2020
