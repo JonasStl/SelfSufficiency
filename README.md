@@ -18,11 +18,11 @@ All data used in this project is publicly available or provided in this reposito
 
 Public datasets:
   - FAOSTAT Food Balance Sheets (accessed on 24.07.2024): https://www.fao.org/faostat/en/#data/FBS
-  - FAOSTAT Trade Data (accessed on 26.11.2023): https://www.fao.org/faostat/en/#data/TM
-  - United Nations World Population Estimates 2022 (accessed on 27.08.2023): https://population.un.org/wpp/
-  - World Wildlife Fund’s 2023 ‘Eating for Net Zero’ Technical Report: https://www.wwf.org.uk/sites/default/files/2023-05/Eating_For_Net_Zero_Technical_Report.pdf
-  - OECD-FAO Agricultural Outlook 2023-2032 Data (accessed on 09.01.2024): https://www.oecd-ilibrary.org/agriculture-and-food/data/oecd-agriculture-statistics/oecd-fao-agricultural-outlook-edition-2023_3f870a2b-en
-  - Food waste at the household and edible portions: https://openknowledge.fao.org/server/api/core/bitstreams/10388b16-5f1a-45d0-b690-e89bb78d33bb/content
+  - FAOSTAT Trade Data (accessed on 18.06.2024): https://www.fao.org/faostat/en/#data/TM
+  - United Nations World Population Estimates 2024 (accessed on 23.07.2024): https://population.un.org/wpp/
+  - World Wildlife Fund’s 2023 ‘Eating for Net Zero’ Technical Report (accessed on 07.06.2024): https://www.wwf.org.uk/sites/default/files/2023-05/Eating_For_Net_Zero_Technical_Report.pdf
+  - OECD-FAO Agricultural Outlook 2023-2032 Data (accessed on 01.07.2024): https://www.oecd-ilibrary.org/agriculture-and-food/data/oecd-agriculture-statistics/oecd-fao-agricultural-outlook-edition-2023_3f870a2b-en
+  - Food waste at the household and edible portions (04.07.2023): https://openknowledge.fao.org/server/api/core/bitstreams/10388b16-5f1a-45d0-b690-e89bb78d33bb/content
 
 Other data available in "SelfSufficiency/data":
   - Food group recommendations: foodgroups_wwf.xlsx
