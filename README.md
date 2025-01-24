@@ -79,3 +79,5 @@ Run the STATA do.files in the following order:
   Uses:
    - Shapefiles: _worldmap.dta
 
+## 5. Contact
+For any questions or concerns, please contact Jonas Stehl (jonas.stehl@uni-goettingen.de)
