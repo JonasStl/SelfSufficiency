@@ -1,6 +1,7 @@
 **Project title:** Gap between national food production and food-based dietary guidance highlights lack of national self-sufficiency
 
 Published in Nature Food: https://www.nature.com/articles/s43016-025-01173-4
+
 DOI: 10.1038/s43016-025-01173-4
 
 **Project description:**
