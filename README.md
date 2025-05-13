@@ -1,4 +1,4 @@
-**Project title:** Assessing self-sufficiency: analyzing the gap between national food production and food-based dietary guidance
+**Project title:** Gap between national food production and food-based dietary guidance highlights lack of national self-sufficiency
 
 
 **Project description:**
