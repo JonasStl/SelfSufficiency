@@ -6,15 +6,14 @@ global workdir "./SelfSufficiency/Analysis"
 global datadir "./SelfSufficiency/Analysis/data"
 
 cd "$datadir/shapefiles"
-//spshape2dta WB_countries_Admin0_10m, replace saving(_worldmap)
+//spshape2dta WB_GAD_ADM0, replace saving(_worldmap)
 
 use "$datadir/shapefiles/_worldmap.dta", clear
 ren ISO_A3_EH iso3
 replace iso3 = "NOR" if WB_A3 == "NOR"
 duplicates list iso3
-duplicates drop iso3, force
 
-merge 1:1 iso3 using "$datadir/productiongap.dta", //nogen
+merge m:1 iso3 using "$datadir/productiongap.dta", //nogen
 
 *** Economic Unions ***
 encode econunions, gen(unions)
