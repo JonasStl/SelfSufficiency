@@ -9,7 +9,7 @@ cd "$datadir/shapefiles"
 //spshape2dta WB_GAD_ADM0, replace saving(_worldmap)
 
 use "$datadir/shapefiles/_worldmap.dta", clear
-ren ISO_A3_EH iso3
+ren ISO_A3 iso3
 replace iso3 = "NOR" if WB_A3 == "NOR"
 duplicates list iso3
 
