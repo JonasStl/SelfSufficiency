@@ -202,13 +202,12 @@ graph export "$workdir/graphs/worldmap_FGgaps_capchange.png", replace
 
 *** Change in gaps with 2032 projections ***
 cd "$datadir/shapefiles"
-//spshape2dta WB_countries_Admin0_10m, replace saving(_worldmap)
+//spshape2dta WB_GAD_ADM0, replace saving(_worldmap)
 
 use "$datadir/shapefiles/_worldmap.dta", clear
-ren ISO_A3_EH iso3
+ren ISO_A3 iso3
 replace iso3 = "NOR" if WB_A3 == "NOR"
 duplicates list iso3
-duplicates drop iso3, force
 
 merge 1:1 iso3 using "$datadir/timetrends_productiongap_2032.dta", //nogen
 
